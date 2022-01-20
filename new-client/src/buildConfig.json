@@ -20,6 +20,7 @@
     "Routing",
     "Search",
     "StreetView",
+    "Suggest",
     "TimeSlider"
   ],
   "allTools": [
@@ -33,8 +34,6 @@
     "Dummy",
     "Edit",
     "Export",
-    "Fir",
-    "Fme",
     "FmeServer",
     "GeosuiteExport",
     "Informative",
@@ -45,6 +44,7 @@
     "Routing",
     "Search",
     "StreetView",
+    "Suggest",
     "TimeSlider",
     "vtsearch"
   ]

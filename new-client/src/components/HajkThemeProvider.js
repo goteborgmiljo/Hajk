@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import App from "./App";
 
@@ -145,7 +145,7 @@ const HajkThemeProvider = ({ activeTools, config, customTheme }) => {
   };
 
   // Take the theme object from state and generate a MUI-theme
-  const muiTheme = createMuiTheme(theme);
+  const muiTheme = createTheme(theme);
 
   // Render, pass through some stuff into App.
   return (

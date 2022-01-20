@@ -75,7 +75,7 @@ class ImagePopupModal extends React.PureComponent {
       <>
         <Dialog
           maxWidth="lg"
-          onBackdropClick={close}
+          onClose={close}
           PaperComponent={PaperComponent}
           PaperProps={{
             component: "img",

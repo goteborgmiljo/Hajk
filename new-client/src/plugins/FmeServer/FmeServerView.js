@@ -362,7 +362,7 @@ const FmeServerView = (props) => {
   // Accepts: An array of objects on {type: string, disabled: bool} form.
   function renderStepperButtons(buttons) {
     return (
-      <Grid container item justify="flex-end">
+      <Grid container item justifyContent="flex-end">
         {buttons.map((button, index) => {
           return (
             <Button

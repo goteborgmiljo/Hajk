@@ -514,7 +514,7 @@ class TimeSliderView extends React.PureComponent {
           <Grid
             container
             direction="row"
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             spacing={2}
           >
@@ -552,7 +552,7 @@ class TimeSliderView extends React.PureComponent {
         <Grid
           container
           alignItems="center"
-          justify="center"
+          justifyContent="center"
           style={{ width: "100%", height: "100%" }}
         >
           <>{this.renderSettingsDialog()}</>

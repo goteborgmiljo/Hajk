@@ -12,8 +12,9 @@ import {
   MultiLineString,
   MultiPolygon,
 } from "ol/geom.js";
-import * as jsts from "jsts";
 import { hfetch } from "utils/FetchWrapper";
+//import * as jsts from "jsts";
+const jsts = {};
 
 class BufferModel {
   constructor(settings) {

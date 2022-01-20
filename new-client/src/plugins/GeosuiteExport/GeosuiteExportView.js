@@ -416,7 +416,7 @@ class GeosuiteExportView extends React.PureComponent {
   //render a spinner while the results are pending.
   renderPending() {
     return (
-      <Grid container direction="row" justify="center">
+      <Grid container direction="row" justifyContent="center">
         <Grid item xs={12}>
           <Box display="flex" justifyContent="center">
             <CircularProgress variant="indeterminate" size={30} />

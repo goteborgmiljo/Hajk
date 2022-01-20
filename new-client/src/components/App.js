@@ -669,7 +669,7 @@ class App extends React.PureComponent {
           container
           wrap="nowrap"
           direction="row"
-          justify="space-between"
+          justifyContent="space-between"
           alignItems="center"
         >
           <Grid item>
@@ -922,15 +922,12 @@ class App extends React.PureComponent {
               ModalProps={{
                 hideBackdrop: this.state.drawerPermanent, //Don't show backdrop if drawer is permanent
                 disableEnforceFocus: true, //Dont enforce focus to be able to handle elements underneath modal
-                onEscapeKeyDown: () => {
-                  this.globalObserver.publish("core.hideDrawer");
-                },
                 style: {
                   //Needs to be set to be able to handle elements underneath modal
                   position: this.state.drawerPermanent ? "initial" : "fixed",
                 },
                 keepMounted: true, //Ensure we dont have to render plugins more than once - UnMounting every time is slow
-                onBackdropClick: () => {
+                onClose: () => {
                   this.globalObserver.publish("core.hideDrawer");
                 },
               }}

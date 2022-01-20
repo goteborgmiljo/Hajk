@@ -169,7 +169,7 @@ class SearchResultsDatasetFeatureDetails extends React.PureComponent {
       currentFeatureIndex + 1 >= numFeaturesInCollection;
 
     return (
-      <Grid container item alignItems="center" justify="space-between">
+      <Grid container item alignItems="center" justifyContent="space-between">
         <Grid item>
           <Tooltip
             title={

@@ -7,7 +7,7 @@ import DocumentHandlerModel from "./DocumentHandlerModel";
 import PanelMenuContainerView from "./panelMenu/PanelMenuContainerView";
 import Observer from "react-event-observer";
 import MapViewModel from "./MapViewModel";
-import { withTheme, createMuiTheme } from "@material-ui/core/styles";
+import { withTheme, createTheme } from "@material-ui/core/styles";
 import { deepMerge } from "../../utils/DeepMerge";
 
 class DocumentHandler extends React.PureComponent {
@@ -88,7 +88,7 @@ class DocumentHandler extends React.PureComponent {
     if (customTheme.typography) {
       this.setBottomMarginsForTypographyVariants(customTheme);
     }
-    return createMuiTheme(deepMerge(theme, customTheme));
+    return createTheme(deepMerge(theme, customTheme));
   };
 
   /**

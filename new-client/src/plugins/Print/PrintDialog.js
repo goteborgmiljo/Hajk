@@ -19,11 +19,7 @@ class PrintDialog extends React.PureComponent {
   render() {
     const { cancelPrint, open, saveAsType } = this.props;
     return createPortal(
-      <Dialog
-        disableBackdropClick={true}
-        disableEscapeKeyDown={true}
-        open={open}
-      >
+      <Dialog onClose={null} open={open}>
         <LinearProgress />
         <DialogTitle>Din {`${saveAsType}`} skapas</DialogTitle>
         <DialogContent>

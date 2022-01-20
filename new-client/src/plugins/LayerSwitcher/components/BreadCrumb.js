@@ -187,7 +187,7 @@ class BreadCrumb extends Component {
           container
           className={classes.gridContainer}
           data-type="bread-crumb"
-          justify="space-between"
+          justifyContent="space-between"
           alignItems="center"
         >
           <Grid item>

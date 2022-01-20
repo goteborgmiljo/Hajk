@@ -18,7 +18,7 @@ class Progress extends React.PureComponent {
     return (
       <Grid
         alignItems="center"
-        justify="center"
+        justifyContent="center"
         container
         className={classes.grid}
       >

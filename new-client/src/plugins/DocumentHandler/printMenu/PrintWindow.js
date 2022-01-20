@@ -428,7 +428,7 @@ class PrintWindow extends React.PureComponent {
         container
         alignContent="center"
         alignItems="center"
-        justify="center"
+        justifyContent="center"
       >
         <Button
           color="primary"
@@ -452,11 +452,7 @@ class PrintWindow extends React.PureComponent {
     return (
       <>
         {createPortal(
-          <Dialog
-            disableBackdropClick={true}
-            disableEscapeKeyDown={true}
-            open={this.state.pdfLoading}
-          >
+          <Dialog onClose={null} open={this.state.pdfLoading}>
             <LinearProgress />
             <DialogTitle>Din PDF skapas</DialogTitle>
             <DialogContent>

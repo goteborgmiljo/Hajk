@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
-import ScrollMenu from "react-horizontal-scrolling-menu";
+import { ScrollMenu } from "react-horizontal-scrolling-menu";
 
 const styles = (theme) => ({
   moreButton: {
@@ -248,25 +248,24 @@ class BreadCrumbs extends Component {
     const { classes, app } = this.props;
     const { chapters } = this.state;
 
-    var breadCrumbs = layers.map((layer) => (
-      <BreadCrumb
-        key={layer.get("caption") + Math.random()}
-        title={layer.get("caption")}
-        layer={layer}
-        chapters={chapters}
-        app={app}
-      />
-    ));
     return (
       <div className={classes.breadCrumbsContainer}>
         <ScrollMenu
-          ref="scrollMenu"
-          data={breadCrumbs}
           alignCenter={false}
           // hideArrows={false}
           // arrowLeft={<Arrow type="left" />}
           // arrowRight={<Arrow type="right" />}
-        />
+        >
+          {layers.map((layer) => (
+            <BreadCrumb
+              key={layer.get("caption") + Math.random()}
+              title={layer.get("caption")}
+              layer={layer}
+              chapters={chapters}
+              app={app}
+            />
+          ))}
+        </ScrollMenu>
       </div>
     );
   }

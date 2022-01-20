@@ -520,7 +520,7 @@ class Journeys extends React.PureComponent {
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
         </Grid>
-        <Grid justify="center" container>
+        <Grid justifyContent="center" container>
           <Grid item xs={4}>
             <div>
               <img

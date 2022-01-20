@@ -76,7 +76,7 @@ class SearchResultsDatasetSummary extends React.PureComponent {
               {featureCollection.source.caption}
             </Typography>
           </Grid>
-          <Grid container item justify="flex-end" xs={2}>
+          <Grid container item justifyContent="flex-end" xs={2}>
             <Tooltip title={toolTipTitle}>
               <Chip
                 size="small"

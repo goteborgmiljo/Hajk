@@ -2,8 +2,8 @@ import { delay } from "../../utils/Delay";
 import { getPointResolution } from "ol/proj";
 import { getCenter } from "ol/extent";
 import jsPDF from "jspdf";
-import * as PDFjs from "pdfjs-dist";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+// import * as PDFjs from "pdfjs-dist";
+// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 
 import Vector from "ol/layer/Vector.js";
 import View from "ol/View";
@@ -13,7 +13,7 @@ import Feature from "ol/Feature.js";
 import { Translate } from "ol/interaction.js";
 import Collection from "ol/Collection";
 import { Style, Stroke, Fill } from "ol/style.js";
-import { saveAs } from "file-saver";
+//import { saveAs } from "file-saver";
 
 export default class PrintModel {
   constructor(settings) {
@@ -742,34 +742,30 @@ export default class PrintModel {
           pdf.save(`${fileName}.pdf`);
           resolve();
         } else {
-          const ab = pdf.output("arraybuffer");
-          PDFjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-          PDFjs.getDocument({ data: ab }).promise.then((pdf) => {
-            pdf.getPage(1).then((page) => {
-              let canvas = document.createElement("canvas");
-              let ctx = canvas.getContext("2d");
-
-              //Scale viewport to match current resolution
-              const viewport = page.getViewport({ scale: 1 });
-              const scale = width / viewport.width;
-              const scaledViewport = page.getViewport({ scale: scale });
-
-              const renderContext = {
-                canvasContext: ctx,
-                viewport: scaledViewport,
-              };
-
-              canvas.height = scaledViewport.height;
-              canvas.width = scaledViewport.width;
-
-              page.render(renderContext).promise.then(() => {
-                canvas.toBlob((blob) => {
-                  saveAs(blob, `${fileName}.png`);
-                  resolve();
-                });
-              });
-            });
-          });
+          // const ab = pdf.output("arraybuffer");
+          // PDFjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+          // PDFjs.getDocument({ data: ab }).promise.then((pdf) => {
+          //   pdf.getPage(1).then((page) => {
+          //     let canvas = document.createElement("canvas");
+          //     let ctx = canvas.getContext("2d");
+          //     //Scale viewport to match current resolution
+          //     const viewport = page.getViewport({ scale: 1 });
+          //     const scale = width / viewport.width;
+          //     const scaledViewport = page.getViewport({ scale: scale });
+          //     const renderContext = {
+          //       canvasContext: ctx,
+          //       viewport: scaledViewport,
+          //     };
+          //     canvas.height = scaledViewport.height;
+          //     canvas.width = scaledViewport.width;
+          //     page.render(renderContext).promise.then(() => {
+          //       canvas.toBlob((blob) => {
+          //         saveAs(blob, `${fileName}.png`);
+          //         resolve();
+          //       });
+          //     });
+          //   });
+          // });
         }
       } catch (error) {
         reject(`Failed to save file... ${error}`);

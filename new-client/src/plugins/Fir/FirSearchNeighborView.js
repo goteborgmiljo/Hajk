@@ -29,7 +29,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import HistoryIcon from "@material-ui/icons/History";
 import { Typography } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import * as jsts from "jsts";
+//import * as jsts from "jsts";
+const jsts = {};
 
 class FirSearchNeighborView extends React.PureComponent {
   state = {

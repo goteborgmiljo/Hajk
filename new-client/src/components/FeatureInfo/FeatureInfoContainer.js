@@ -98,7 +98,7 @@ class FeatureInfoContainer extends React.PureComponent {
     return (
       <Grid
         alignItems="center"
-        justify="space-between"
+        justifyContent="space-between"
         className={classes.toggler}
         container
       >
@@ -341,7 +341,7 @@ class FeatureInfoContainer extends React.PureComponent {
           </Grid>
         )}
         <Grid
-          justify="center"
+          justifyContent="center"
           alignContent={featureInfoLoaded ? "flex-start" : "center"}
           className={classes.featureInfoContainer}
           item

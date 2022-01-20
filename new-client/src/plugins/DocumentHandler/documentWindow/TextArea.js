@@ -51,7 +51,7 @@ class TextArea extends React.PureComponent {
         <Grid
           id="text-area-content"
           className={classes.container}
-          justify="center"
+          justifyContent="center"
           container
         >
           <Grid
@@ -61,7 +61,7 @@ class TextArea extends React.PureComponent {
             item
           >
             {this.renderDivider()}
-            <Grid justify="center" container>
+            <Grid justifyContent="center" container>
               <Grid
                 component="blockquote"
                 className={classes.typographyContainer}

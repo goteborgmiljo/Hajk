@@ -641,7 +641,7 @@ class SearchResultsContainer extends React.PureComponent {
       return null;
     } else {
       return (
-        <Grid item container align="center" justify="flex-end">
+        <Grid item container align="center" justifyContent="flex-end">
           <Grow in={this.state.showTools} timeout={800}>
             <Grid
               item
@@ -976,7 +976,7 @@ class SearchResultsContainer extends React.PureComponent {
       <Grid
         container
         item
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
         wrap="nowrap"
         xs={12}
@@ -1008,7 +1008,7 @@ class SearchResultsContainer extends React.PureComponent {
         <Grid
           container
           item
-          justify="flex-end"
+          justifyContent="flex-end"
           xs={this.state.showTools ? 7 : 1}
         >
           {this.renderSearchResultListTools()}

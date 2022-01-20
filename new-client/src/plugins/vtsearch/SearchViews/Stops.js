@@ -197,7 +197,7 @@ class Stops extends React.PureComponent {
           value={this.state.busStopValue}
           onChange={this.handleChange}
         >
-          <Grid justify="flex-start" alignItems="center" container>
+          <Grid justifyContent="flex-start" alignItems="center" container>
             <Grid item xs={2}>
               <FormControlLabel
                 value="stopAreas"
@@ -309,7 +309,7 @@ class Stops extends React.PureComponent {
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
         </Grid>
-        <Grid justify="center" container>
+        <Grid justifyContent="center" container>
           <Grid item xs={4}>
             <div>
               <img
@@ -352,7 +352,7 @@ class Stops extends React.PureComponent {
       <div>
         <Grid
           container
-          justify="center"
+          justifyContent="center"
           spacing={2}
           onKeyPress={this.handleKeyPress}
         >

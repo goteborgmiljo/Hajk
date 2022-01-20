@@ -358,7 +358,7 @@ class Lines extends React.PureComponent {
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
         </Grid>
-        <Grid justify="center" container>
+        <Grid justifyContent="center" container>
           <Grid item xs={4}>
             <div>
               <img
@@ -400,7 +400,7 @@ class Lines extends React.PureComponent {
       <div>
         <Grid
           container
-          justify="center"
+          justifyContent="center"
           spacing={2}
           onKeyPress={this.handleKeyPress}
         >

@@ -371,7 +371,7 @@ class SearchResultListContainer extends React.Component {
         position="static"
       >
         <Toolbar classes={{ regular: classes.toolbar }}>
-          <Grid justify="space-between" alignItems="center" container>
+          <Grid justifyContent="space-between" alignItems="center" container>
             <Grid style={{ paddingLeft: 10 }} item>
               {searchResults.length > 0 &&
                 this.renderTabsController(searchResults)}

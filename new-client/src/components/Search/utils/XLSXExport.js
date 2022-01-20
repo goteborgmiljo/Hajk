@@ -26,13 +26,13 @@ export default class XLSXExport {
         return results;
       }
 
-      featureCollections.forEach(async (fc) => {
+      for (const fc of featureCollections) {
         const sheet = await this.#createXLSXSheet(fc);
         if (sheet) {
           const sheetName = this.#getSheetName(fc);
           xlsx.utils.book_append_sheet(workBook, sheet, sheetName);
         }
-      });
+      }
 
       return xlsx.writeFile(workBook, fileName);
     } catch (error) {

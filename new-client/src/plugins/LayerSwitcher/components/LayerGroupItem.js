@@ -1,150 +1,117 @@
 import React, { Component } from "react";
-import cslx from "clsx";
-import { Button, Tooltip, Typography, Grid } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import IconWarning from "@material-ui/icons/Warning";
-import CallMadeIcon from "@material-ui/icons/CallMade";
-import InfoIcon from "@material-ui/icons/Info";
-import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import CloseIcon from "@material-ui/icons/Close";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import PropTypes from "prop-types";
+import { Button, Tooltip, Typography, Grid, Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { withSnackbar } from "notistack";
+import IconWarning from "@mui/icons-material/Warning";
+import CallMadeIcon from "@mui/icons-material/CallMade";
+import InfoIcon from "@mui/icons-material/Info";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import CloseIcon from "@mui/icons-material/Close";
 import LayerSettings from "./LayerSettings.js";
 import DownloadLink from "./DownloadLink";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-const styles = (theme) => ({
-  button: {
-    cursor: "pointer",
-  },
-  caption: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  captionText: {
-    top: "-6px",
-    cursor: "pointer",
-    fontSize: theme.typography.pxToRem(15),
-  },
-  image: {},
-  links: {
-    padding: 0,
-    margin: 0,
-    listStyle: "none",
-  },
-  layerGroupTypography: {
-    display: "flex",
-    alignItems: "center",
-  },
-  layerItem: {
-    justifyContent: "space-between",
-    borderBottom: `${theme.spacing(0.2)}px solid ${theme.palette.divider}`,
-    margin: "5px 0",
-  },
-  layerItemContainer: {
-    borderTopRightRadius: "10px",
-    boxShadow:
-      "0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12)",
-  },
-  layerItemInfo: {
-    display: "flex",
-  },
-  rightIcon: {
-    marginLeft: theme.spacing(1),
-    fontSize: "16px",
-  },
-  layerInfo: {
-    display: "flex",
-    alignItems: "center",
-    padding: "3px",
-    border: `${theme.spacing(0.2)}px solid ${theme.palette.divider}`,
-  },
-  infoContainer: {},
-  infoButton: {
-    cursor: "pointer",
-  },
-  infoTextContainer: {
-    margin: "10px 45px",
-  },
-  layerGroupWrapper: {
-    display: "flex",
-    alignItems: "center",
-  },
-  layerGroup: {
-    paddingTop: "5px",
-    paddingBottom: "5px",
-    marginLeft: "21px",
-  },
-  layerGroupWithoutExpandArrow: {
-    marginLeft: "45px",
-  },
-  layerGroupContainer: {
-    marginTop: "0",
-    marginBottom: "-5px",
-  },
-  layerGroupHeader: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    borderBottom: `${theme.spacing(0.2)}px solid ${theme.palette.divider}`,
-  },
-  layerGroupLayers: {
-    marginLeft: "45px",
-  },
-  layerGroupItem: {
-    display: "flex",
-  },
-  legendImage: {
-    maxWidth: "250px",
-  },
-  slider: {
-    padding: "30px",
-    overflow: "hidden",
-  },
-  settingsButton: {
-    cursor: "pointer",
-  },
-  subtitle2: {
-    fontWeight: 500,
-  },
-  layerButtons: {
-    display: "flex",
-    alignItems: "center",
-  },
-  layerButton: {
-    cursor: "pointer",
-    fontSize: "15pt",
-    width: "32px",
-  },
-  checkBoxIcon: {
-    cursor: "pointer",
-    float: "left",
-    marginRight: "5px",
-  },
-  legendIcon: {
-    width: theme.typography.pxToRem(18),
-    height: theme.typography.pxToRem(18),
-    marginRight: "5px",
-  },
-  legendIconContainer: {
-    display: "flex",
-  },
-  arrowIcon: {
-    display: "flex",
-    float: "left",
-  },
-});
+const ExpandButtonWrapper = styled("div")(() => ({
+  display: "flex",
+  float: "left",
+  cursor: "pointer",
+}));
+
+const LayerInfo = styled("div")(({ theme }) => ({
+  width: "100%",
+  borderBottom: `${theme.spacing(0.2)} solid ${theme.palette.divider}`,
+}));
+
+const LayerSummaryContainer = styled((props) => (
+  <Grid
+    justifyContent="space-between"
+    container
+    alignItems="center"
+    wrap="nowrap"
+    {...props}
+  />
+))(({ theme }) => ({
+  width: "100%",
+}));
+
+const SummaryButtonsContainer = styled("div")(() => ({
+  display: "flex",
+  alignItems: "center",
+}));
+
+const SummaryButtonWrapper = styled("div")(() => ({
+  display: "flex",
+  alignItems: "center",
+  width: 35,
+  height: 35,
+  cursor: "pointer",
+}));
+
+const Caption = styled(Typography)(({ theme }) => ({
+  cursor: "pointer",
+  fontSize: theme.typography.pxToRem(15),
+}));
+
+const CheckBoxWrapper = styled("div")(() => ({
+  display: "flex",
+  alignItems: "center",
+  cursor: "pointer",
+  float: "left",
+  marginRight: "5px",
+}));
+
+const LegendImage = styled("img")(({ theme }) => ({
+  marginLeft: theme.spacing(0.4),
+  maxWidth: "250px",
+}));
+
+const LegendIcon = styled("img")(({ theme }) => ({
+  width: theme.typography.pxToRem(18),
+  height: theme.typography.pxToRem(18),
+  marginRight: "5px",
+}));
+
+const InfoTextContainer = styled("div")(() => ({
+  margin: "10px 45px",
+}));
+
+const StyledList = styled("ul")(() => ({
+  padding: 0,
+  margin: 0,
+  listStyle: "none",
+}));
 
 class LayerGroupItem extends Component {
+  static propTypes = {
+    options: PropTypes.object,
+    layer: PropTypes.object.isRequired,
+    cqlFilterVisible: PropTypes.bool,
+    model: PropTypes.object.isRequired,
+    observer: PropTypes.object,
+    chapters: PropTypes.array,
+  };
+
   constructor(props) {
     super(props);
+    const { layer } = props;
     const layerInfo = props.layer.get("layerInfo");
     this.state = {
+      subLayers: props.layer.subLayers,
       caption: layerInfo.caption,
       visible: props.layer.get("visible"),
-      visibleSubLayers: props.layer.get("visible") ? props.layer.subLayers : [],
+      // If layer is to be shown, check if there are some specified sublayers (if yes, we'll
+      // enable only those). Else, let's default to showing all sublayers, or finally fallback
+      // to an empty array.
+      visibleSubLayers: props.layer.get("visible")
+        ? props.layer.visibleAtStartSubLayers?.length > 0
+          ? props.layer.visibleAtStartSubLayers
+          : props.layer.subLayers
+        : [],
       expanded: false,
       name: props.layer.get("name"),
       legend: layerInfo.legend,
@@ -154,6 +121,7 @@ class LayerGroupItem extends Component {
       infoText: layerInfo.infoText,
       infoUrl: layerInfo.infoUrl,
       infoUrlText: layerInfo.infoUrlText,
+      infoOpenDataLink: layerInfo.infoOpenDataLink,
       infoOwner: layerInfo.infoOwner,
       infoExpanded: false,
       instruction: layerInfo.instruction,
@@ -166,6 +134,10 @@ class LayerGroupItem extends Component {
     this.renderSubLayer = this.renderSubLayer.bind(this);
 
     this.hideExpandArrow = layerInfo?.hideExpandArrow === true ? true : false;
+    // Check if the layer uses min and max zoom levels.
+    this.usesMinMaxZoom = this.layerUsesMinMaxZoom();
+    // Get the minMaxZoomAlertOnToggleOnly property from the layer.
+    this.minMaxZoomAlertOnToggleOnly = layer.get("minMaxZoomAlertOnToggleOnly");
   }
   /**
    * Triggered when the component is successfully mounted into the DOM.
@@ -178,6 +150,21 @@ class LayerGroupItem extends Component {
     model.observer.subscribe("hideLayer", this.setHidden);
     model.observer.subscribe("showLayer", this.setVisible);
     model.observer.subscribe("toggleGroup", this.toggleGroupVisible);
+
+    // Listen for changes in the layer's visibility.
+    this.props.layer.on?.("change:visible", (e) => {
+      // Update the 'visible' state based on the layer's new visibility.
+      const visible = !e.oldValue;
+      this.setState({
+        visible,
+      });
+
+      // Listen to zoom changes if the layer is visible.
+      this.listenToZoomChange(visible);
+    });
+
+    // Initially listen to zoom changes if the layer is visible.
+    this.listenToZoomChange(this.state.visible);
 
     // Set load status by subscribing to a global event. Expect ID (int) of layer
     // and status (string "ok"|"loaderror"). Also, once status was set to "loaderror",
@@ -194,25 +181,135 @@ class LayerGroupItem extends Component {
   }
 
   /**
+   * Determines if the layer has minimum and maximum zoom level restrictions.
+   *
+   * This function checks the layer properties to see if the layer has minimum and/or maximum
+   * zoom levels defined. If either minZoom or maxZoom is within the valid range (0 to Infinity),
+   * the function returns true, indicating that the layer has zoom restrictions.
+   *
+   * Example: If the layer has minZoom = 5 and maxZoom = 10, it will only be visible
+   * when the map's zoom level is between 5 and 10.
+   *
+   * @returns {boolean} - True if the layer has zoom restrictions, false otherwise.
+   */
+  layerUsesMinMaxZoom() {
+    // Retrieve the layer properties from the layer object.
+    const lprops = this.props.layer.getProperties();
+
+    // Get the maxZoom and minZoom properties if they exist, otherwise set them to 0.
+    const maxZ = lprops.maxZoom ?? 0;
+    const minZ = lprops.minZoom ?? 0;
+
+    // Check if either minZoom or maxZoom is within a valid range (0 < value < Infinity).
+    // Return true if any of them are within the valid range, otherwise return false.
+    return (maxZ > 0 && maxZ < Infinity) || (minZ > 0 && minZ < Infinity);
+  }
+
+  /**
+   * Handles the zoom end event to check if the layer should be visible at the current zoom level.
+   *
+   * This function is triggered when the map's zoom level changes. It checks if the layer's
+   * visibility is within the specified minZoom and maxZoom range. If the layer is not visible
+   * at the current zoom level and the conditions to show a Snackbar message are met, it calls
+   * the showZoomSnack() function to display a message. The function also updates the
+   * state.zoomVisible property accordingly.
+   *
+   * @param {Object} e - The event object (optional).
+   * @returns {boolean} - True if the layer is visible at the current zoom level, false otherwise.
+   */
+  zoomEndHandler = (e) => {
+    // Get the current map zoom level.
+    const zoom = this.props.model.olMap.getView().getZoom();
+    // Retrieve the layer properties.
+    const lprops = this.props.layer.getProperties();
+    // Check if the current zoom level is within the allowed range of minZoom and maxZoom.
+    const layerIsZoomVisible = zoom > lprops.minZoom && zoom <= lprops.maxZoom;
+
+    let showSnack = false;
+
+    // Determine if the Snackbar message should be shown based on the layer visibility and zoom level conditions.
+    if (this.minMaxZoomAlertOnToggleOnly === true) {
+      if (!this.state.visible && !layerIsZoomVisible && e?.type === "click") {
+        showSnack = true;
+      }
+    } else {
+      if (
+        !layerIsZoomVisible &&
+        (this.state.zoomVisible || !this.state.visible)
+      ) {
+        showSnack = true;
+      }
+    }
+
+    // If the Snackbar message should be shown, call the showZoomSnack function.
+    if (showSnack === true) {
+      this.showZoomSnack();
+    }
+
+    // Update the state with the new value for zoomVisible.
+    this.setState({
+      zoomVisible: layerIsZoomVisible,
+    });
+    return layerIsZoomVisible;
+  };
+
+  /**
+   * Subscribes or unsubscribes to the zoom end event based on the provided parameter.
+   *
+   * This function either subscribes or unsubscribes the zoomEndHandler() function to the
+   * 'core.zoomEnd' event, depending on the value of the bListen parameter. If the layer
+   * doesn't have any zoom restrictions, the function returns without doing anything.
+   *
+   * Example: If the layer is visible, subscribe to the map's "moveend" event to listen for
+   * zoom changes; if it's not visible, unsubscribe from the event.
+   *
+   * @param {boolean} bListen - If true, subscribes to the zoom end event; if false, unsubscribes.
+   */
+  listenToZoomChange(bListen) {
+    const { model } = this.props;
+
+    // If the layer doesn't use minZoom and maxZoom properties, return without doing anything.
+    if (!this.usesMinMaxZoom) return;
+
+    // Define the event name for zoom change events.
+    const eventName = "core.zoomEnd";
+
+    // Subscribe or unsubscribe to the zoom change event based on the 'bListen' parameter.
+    if (bListen && !this.zoomEndListener) {
+      this.zoomEndListener = model.globalObserver.subscribe(
+        eventName,
+        this.zoomEndHandler
+      );
+    } else {
+      if (this.zoomEndListener) {
+        model.globalObserver.unsubscribe(eventName, this.zoomEndListener);
+        this.zoomEndListener = null;
+      }
+    }
+  }
+
+  /**
    * Render the load information component.
    * @instance
    * @return {external:ReactElement}
    */
   renderStatus() {
-    const { classes } = this.props;
     return (
       this.state.status === "loaderror" && (
-        <div className={classes.layerButton}>
-          <Tooltip title="Lagret kunde inte laddas in. Kartservern svarar inte.">
+        <Tooltip
+          disableInteractive
+          title="Lagret kunde inte laddas in. Kartservern svarar inte."
+        >
+          <SummaryButtonWrapper>
             <IconWarning />
-          </Tooltip>
-        </div>
+          </SummaryButtonWrapper>
+        </Tooltip>
       )
     );
   }
 
   renderLegendImage() {
-    var src =
+    const src =
       this.state.legend[0] && this.state.legend[0].url
         ? this.state.legend[0].url
         : "";
@@ -245,20 +342,19 @@ class LayerGroupItem extends Component {
   }
 
   renderChapterLinks(chapters) {
-    const { classes } = this.props;
     if (chapters && chapters.length > 0) {
-      let chaptersWithLayer = this.findChapters(
+      const chaptersWithLayer = this.findChapters(
         this.props.layer.get("name"),
         chapters
       );
       if (chaptersWithLayer.length > 0) {
         return (
-          <div className={classes.infoTextContainer}>
+          <InfoTextContainer>
             <Typography>
               Innehåll från denna kategori finns benämnt i följande kapitel i
               översiktsplanen:
             </Typography>
-            <ul className={classes.links}>
+            <StyledList>
               {chaptersWithLayer.map((chapter, i) => {
                 return (
                   <li key={i}>
@@ -267,13 +363,13 @@ class LayerGroupItem extends Component {
                       onClick={this.openInformative(chapter)}
                     >
                       {chapter.header}
-                      <CallMadeIcon className={classes.rightIcon} />
+                      <CallMadeIcon sx={{ marginLeft: 1, fontSize: "16px" }} />
                     </Button>
                   </li>
                 );
               })}
-            </ul>
-          </div>
+            </StyledList>
+          </InfoTextContainer>
         );
       } else {
         return null;
@@ -282,14 +378,6 @@ class LayerGroupItem extends Component {
       return null;
     }
   }
-
-  toggleVisible = (layer) => (e) => {
-    var visible = !this.state.visible;
-    this.setState({
-      visible: visible,
-    });
-    layer.setVisible(visible);
-  };
 
   toggle() {
     this.setState({
@@ -304,7 +392,7 @@ class LayerGroupItem extends Component {
   }
 
   isInfoEmpty() {
-    let chaptersWithLayer = this.findChapters(
+    const chaptersWithLayer = this.findChapters(
       this.props.layer.get("name"),
       this.props.chapters
     );
@@ -320,8 +408,9 @@ class LayerGroupItem extends Component {
 
   setHidden = (l) => {
     const { layer } = this.props;
-    if (l === layer) {
-      // Fix underlaying source
+
+    if (l.get("name") === layer.get("name")) {
+      // Fix underlying source
       this.props.layer.getSource().updateParams({
         // Ensure that the list of sublayers is emptied (otherwise they'd be
         // "remembered" the next time user toggles group)
@@ -333,6 +422,9 @@ class LayerGroupItem extends Component {
       // Hide the layer in OL
       layer.setVisible(false);
 
+      // Close any existing zoom warning Snackbars.
+      this.props.closeSnackbar(this.zoomWarningSnack);
+
       // Update UI state
       this.setState({
         visible: false,
@@ -341,7 +433,7 @@ class LayerGroupItem extends Component {
     }
   };
 
-  setVisible = (la) => {
+  setVisible = (la, subLayer) => {
     let l,
       subLayersToShow = null;
 
@@ -382,6 +474,13 @@ class LayerGroupItem extends Component {
           .join(","),
       });
 
+      const { layer } = this.props;
+
+      let visibleLayers = [...subLayersToShow];
+      if (layer.get("layers") && layer.get("layers").length > 0) {
+        visibleLayers.push(layer.get("layers")[0]);
+      }
+
       this.setState({
         visible: true,
         visibleSubLayers: subLayersToShow,
@@ -389,11 +488,73 @@ class LayerGroupItem extends Component {
     }
   };
 
+  /**
+   * Toggles the visibility of a group layer and handles Snackbar messages for sublayers.
+   *
+   * This function toggles the visibility of the provided group layer. If the layer becomes visible,
+   * it calls setVisible() and checks the current zoom level to see if the layer should be visible.
+   * If the layer is not visible at the current zoom level and the conditions to show a Snackbar
+   * message are met, it calls the showZoomSnack() function to display a message. The function
+   * also updates the state.zoomVisible and state.visibleSubLayers properties accordingly.
+   * If the layer becomes hidden, it calls setHidden().
+   *
+   * Example: If a layer group has 3 sublayers, clicking the checkbox will show
+   * or hide all 3 sublayers at once.
+   *
+   * @param {Object} layer - The group layer to toggle visibility for.
+   * @returns {function} - A function to handle the onClick event for the group layer.
+   */
   toggleGroupVisible = (layer) => (e) => {
-    var visible = !this.state.visible;
+    const visible = !this.state.visible;
+
+    // If the layer is becoming visible.
     if (visible) {
+      // Set the layer as visible.
       this.setVisible(layer);
+
+      // Get all sublayers of the layer group.
+      const subLayers = Object.keys(layer.getProperties().layerInfo.layersInfo);
+
+      // Get the current zoom level.
+      const zoom = this.props.model.olMap.getView().getZoom();
+      const lprops = this.props.layer.getProperties();
+      const layerIsZoomVisible =
+        zoom > lprops.minZoom && zoom <= lprops.maxZoom;
+
+      let showSnack = false;
+
+      // If the layer is not visible at the current zoom level, show a Snackbar.
+      // Example: If minMaxZoomAlertOnToggleOnly is set to true, a Snackbar will only be shown
+      // when the layer is toggled on and is not visible at the current zoom level.
+      if (this.minMaxZoomAlertOnToggleOnly === true) {
+        if (!this.state.visible && !layerIsZoomVisible && e?.type === "click") {
+          showSnack = true;
+        }
+      } else {
+        // If the layer is not visible at the current zoom level and either
+        // state.zoomVisible is true or state.visible is false, a Snackbar will be shown.
+        if (
+          !layerIsZoomVisible &&
+          (this.state.zoomVisible || !this.state.visible)
+        ) {
+          showSnack = true;
+        }
+      }
+
+      // If a Snackbar should be shown, call the showZoomSnack function with the subLayers array and set isGroupLayer to true.
+      // Example: If a group layer has 3 sublayers and none are visible at the current zoom level,
+      // the Snackbar will display a message for each sublayer.
+      if (showSnack === true) {
+        this.showZoomSnack(subLayers, true);
+      }
+
+      // Update the state with the new values for zoomVisible and visibleSubLayers.
+      this.setState({
+        zoomVisible: layerIsZoomVisible,
+        visibleSubLayers: subLayers,
+      });
     } else {
+      // If the layer is becoming hidden, call setHidden() to set the layer as hidden.
       this.setHidden(layer);
     }
   };
@@ -408,20 +569,31 @@ class LayerGroupItem extends Component {
     const { visible } = this.state;
     layerVisibility = visible;
 
+    let isNewSubLayer = false;
+
     if (isVisible) {
       visibleSubLayers = visibleSubLayers.filter(
         (visibleSubLayer) => visibleSubLayer !== subLayer
       );
     } else {
       visibleSubLayers.push(subLayer);
+      // Restore order to its former glory. Sort using original sublayer array.
+      visibleSubLayers.sort((a, b) => {
+        return (
+          this.state.subLayers.indexOf(a) - this.state.subLayers.indexOf(b)
+        );
+      });
+      isNewSubLayer = true;
     }
 
     if (!visible && visibleSubLayers.length > 0) {
       layerVisibility = true;
+      this.setVisible(this.props.layer, subLayer);
     }
 
     if (visibleSubLayers.length === 0) {
       layerVisibility = false;
+      this.setHidden(this.props.layer);
     }
 
     if (visibleSubLayers.length >= 1) {
@@ -450,106 +622,122 @@ class LayerGroupItem extends Component {
         visible: layerVisibility,
         visibleSubLayers: visibleSubLayers,
       });
+
+      // Display a Snackbar message if the layer is not visible at the current zoom level.
+      const zoom = this.props.model.olMap.getView().getZoom();
+      const lprops = this.props.layer.getProperties();
+      const layerIsZoomVisible =
+        zoom > lprops.minZoom && zoom <= lprops.maxZoom;
+
+      let showSnack = false;
+
+      if (this.minMaxZoomAlertOnToggleOnly === true) {
+        if (!this.state.visible && !layerIsZoomVisible && e?.type === "click") {
+          showSnack = true;
+        }
+      } else {
+        if (
+          !layerIsZoomVisible &&
+          (this.state.zoomVisible || !this.state.visible)
+        ) {
+          showSnack = true;
+        }
+      }
+
+      if (isNewSubLayer && !layerIsZoomVisible) {
+        showSnack = true;
+      }
+
+      if (showSnack === true) {
+        this.showZoomSnack(subLayer, false);
+      }
+
+      this.setState({
+        zoomVisible: layerIsZoomVisible,
+      });
     } else {
       this.setHidden(this.props.layer);
     }
   };
 
   renderLegendIcon(url) {
-    const { classes } = this.props;
-    return (
-      <Grid item>
-        <div className={classes.legendIconContainer}>
-          <img
-            className={classes.legendIcon}
-            alt="Teckenförklaring"
-            src={url}
-          />
-        </div>
-      </Grid>
-    );
+    return <LegendIcon alt="Teckenförklaringsikon" src={url} />;
   }
 
   renderSubLayer(layer, subLayer, index) {
     const { visibleSubLayers } = this.state;
-    const { classes } = this.props;
-
-    var visible = visibleSubLayers.some(
+    const visible = visibleSubLayers.some(
       (visibleSubLayer) => visibleSubLayer === subLayer
     );
-    var toggleSettings = this.toggleSubLayerSettings.bind(this, index);
+    const toggleSettings = this.toggleSubLayerSettings.bind(this, index);
     const legendIcon = layer.layersInfo[subLayer].legendIcon;
+
     return (
-      <div key={index} className={classes.layerItem}>
-        <div className={classes.caption}>
+      <LayerInfo key={index}>
+        <LayerSummaryContainer>
           <Grid
-            wrap="nowrap"
             container
             alignItems="center"
+            wrap="nowrap"
             onClick={this.toggleLayerVisible(subLayer)}
           >
-            {visible ? (
-              <CheckBoxIcon className={classes.checkBoxIcon} />
-            ) : (
-              <CheckBoxOutlineBlankIcon className={classes.checkBoxIcon} />
-            )}
-
+            <CheckBoxWrapper>
+              {!visible ? (
+                <CheckBoxOutlineBlankIcon />
+              ) : (
+                <CheckBoxIcon
+                  sx={{
+                    fill: (theme) =>
+                      !this.state.zoomVisible && this.state.visible
+                        ? theme.palette.warning.dark
+                        : "",
+                  }}
+                />
+              )}
+            </CheckBoxWrapper>
             {legendIcon && this.renderLegendIcon(legendIcon)}
-            <Grid item>
-              <Typography className={classes.captionText}>
-                {layer.layersInfo[subLayer].caption}
-              </Typography>
-            </Grid>
+            <Caption>{layer.layersInfo[subLayer].caption}</Caption>
           </Grid>
-          <div className={classes.layerButtons}>
-            <div className={classes.layerButton}>
+          <SummaryButtonsContainer>
+            <SummaryButtonWrapper>
               <DownloadLink
                 index={index}
                 layer={this.props.layer}
                 enableDownloadLink={this.props.mapConfig.map.enableDownloadLink}
               />
-            </div>
-            <div className={classes.layerButton}>
+            </SummaryButtonWrapper>
+            <SummaryButtonWrapper>
               {this.state.toggleSubLayerSettings[index] ? (
-                <CloseIcon
-                  className={classes.settingsButton}
-                  onClick={toggleSettings}
-                />
+                <CloseIcon onClick={() => toggleSettings()} />
               ) : (
-                <MoreHorizIcon
-                  className={classes.settingsButton}
-                  onClick={toggleSettings}
-                />
+                <MoreHorizIcon onClick={() => toggleSettings()} />
               )}
-            </div>
-          </div>
-        </div>
-        <div>
-          {this.state.toggleSubLayerSettings[index] ? (
-            <div>
-              <img
-                alt="Teckenförklaring"
-                src={this.props.layer.layersInfo[subLayer].legend}
-                className={classes.legendImage}
-              />
-            </div>
-          ) : null}
-        </div>
-      </div>
+            </SummaryButtonWrapper>
+          </SummaryButtonsContainer>
+        </LayerSummaryContainer>
+        {this.state.toggleSubLayerSettings[index] ? (
+          <Grid item xs={12}>
+            <LegendImage
+              alt="Teckenförklaring"
+              src={this.props.layer.layersInfo[subLayer].legend}
+            />
+          </Grid>
+        ) : null}
+      </LayerInfo>
     );
   }
 
   renderSubLayers() {
     const { open } = this.state;
-    const { layer, classes } = this.props;
+    const { layer } = this.props;
 
     if (open) {
       return (
-        <div className={classes.layerGroupLayers}>
+        <Box sx={{ marginLeft: "45px" }}>
           {layer.subLayers.map((subLayer, index) =>
             this.renderSubLayer(layer, subLayer, index)
           )}
-        </div>
+        </Box>
       );
     } else {
       return null;
@@ -558,10 +746,9 @@ class LayerGroupItem extends Component {
 
   renderInfo() {
     const { infoTitle, infoText } = this.state;
-    const { classes } = this.props;
     if (infoText) {
       return (
-        <div className={classes.infoTextContainer}>
+        <InfoTextContainer>
           <Typography variant="subtitle2">{infoTitle}</Typography>
           <Typography
             variant="body2"
@@ -569,7 +756,7 @@ class LayerGroupItem extends Component {
               __html: infoText,
             }}
           />
-        </div>
+        </InfoTextContainer>
       );
     } else {
       return null;
@@ -578,14 +765,36 @@ class LayerGroupItem extends Component {
 
   renderMetadataLink() {
     const { infoUrl, infoUrlText } = this.state;
-    const { classes } = this.props;
     if (infoUrl) {
       return (
-        <div className={classes.infoTextContainer}>
-          <a href={infoUrl} target="_blank" rel="noopener noreferrer">
-            {infoUrlText || infoUrl}
-          </a>
-        </div>
+        <InfoTextContainer>
+          <Typography variant="body2" component="div">
+            <a href={infoUrl} target="_blank" rel="noopener noreferrer">
+              {infoUrlText || infoUrl}
+            </a>
+          </Typography>
+        </InfoTextContainer>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  renderOpenDataLink() {
+    const { infoOpenDataLink } = this.state;
+    if (infoOpenDataLink) {
+      return (
+        <InfoTextContainer>
+          <Typography variant="body2" component="div">
+            <a
+              href={this.infoOpenDataLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {this.infoOpenDataLink}
+            </a>
+          </Typography>
+        </InfoTextContainer>
       );
     } else {
       return null;
@@ -594,15 +803,14 @@ class LayerGroupItem extends Component {
 
   renderOwner() {
     const { infoOwner } = this.state;
-    const { classes } = this.props;
     if (infoOwner) {
       return (
-        <div className={classes.infoTextContainer}>
+        <InfoTextContainer>
           <Typography
             variant="body2"
             dangerouslySetInnerHTML={{ __html: infoOwner }}
           ></Typography>
-        </div>
+        </InfoTextContainer>
       );
     } else {
       return null;
@@ -615,6 +823,7 @@ class LayerGroupItem extends Component {
         <div>
           {this.renderInfo()}
           {this.renderMetadataLink()}
+          {this.renderOpenDataLink()}
           {this.renderOwner()}
           <div>{this.renderChapterLinks(this.props.chapters || [])}</div>
         </div>
@@ -637,139 +846,183 @@ class LayerGroupItem extends Component {
   }
 
   renderInfoToggler = () => {
-    const { classes } = this.props;
-
     return (
       !this.isInfoEmpty() && (
-        <div className={classes.layerButton}>
-          <div className={classes.infoContainer}>
-            {this.state.infoVisible ? (
-              <RemoveCircleIcon
-                className={classes.infoButton}
-                onClick={() => this.toggleInfo()}
-              />
-            ) : (
-              <InfoIcon
-                onClick={() => this.toggleInfo()}
-                className={classes.infoButton}
-                style={{
-                  boxShadow: this.state.infoVisible
-                    ? "rgb(204, 204, 204) 2px 3px 1px"
-                    : "inherit",
-                  borderRadius: "100%",
-                }}
-              />
-            )}
-          </div>
-        </div>
+        <SummaryButtonWrapper>
+          {this.state.infoVisible ? (
+            <RemoveCircleIcon onClick={() => this.toggleInfo()} />
+          ) : (
+            <InfoIcon
+              onClick={() => this.toggleInfo()}
+              style={{
+                boxShadow: this.state.infoVisible
+                  ? "rgb(204, 204, 204) 2px 3px 1px"
+                  : "inherit",
+                borderRadius: "100%",
+              }}
+            />
+          )}
+        </SummaryButtonWrapper>
       )
     );
   };
 
-  render() {
-    const { classes, cqlFilterVisible, layer } = this.props;
-    const { open, visible, visibleSubLayers } = this.state;
+  /**
+   * Displays a Snackbar message to inform the user about the layer's visibility at the current zoom level.
+   *
+   * This function shows a Snackbar message for each visible sublayer that is not visible at the
+   * current zoom level, informing the user that the layer is not visible. If the layer is a
+   * group layer, it handles the Snackbar messages for all sublayers within the group.
+   *
+   * @param {Array|string} sublayer - The sublayer or an array of sublayers to show the Snackbar message for.
+   * @param {boolean} isGroupLayer - True if the layer is a group layer, false otherwise.
+   */
+  showZoomSnack(sublayer, isGroupLayer) {
+    // If a zoom warning snackbar is already displayed, return without doing anything.
+    // This method ensures that only one Snackbar notification is displayed at a time, preventing multiple notifications from overlapping.
+    if (this.zoomWarningSnack) return;
 
-    function getIcon() {
-      if (visible) {
-        if (visibleSubLayers.length === layer.subLayers.length) {
-          return <CheckBoxIcon className={classes.checkBoxIcon} />;
-        } else {
-          return (
-            <CheckBoxIcon
-              style={{ fill: "gray" }}
-              className={classes.checkBoxIcon}
-            />
-          );
-        }
-      } else {
-        return <CheckBoxOutlineBlankIcon className={classes.checkBoxIcon} />;
-      }
+    const { layer } = this.props;
+    const layerProperties = layer.getProperties();
+    const layerInfo = layerProperties.layerInfo || {};
+    const layersInfo = layerInfo.layersInfo || {};
+
+    let visibleLayers = [...this.state.visibleSubLayers];
+    if (layer.get("layers") && layer.get("layers").length > 0) {
+      visibleLayers.push(layer.get("layers")[0]);
     }
+
+    /**
+     * Adds captions to sublayers for display in a Snackbar message.
+     *
+     * This function receives a sublayer and retrieves the corresponding layer caption from the
+     * layerInfo object. It then creates a message string and enqueues a Snackbar with the message.
+     * The Snackbar will be displayed with a "warning" variant and will be removed when closed.
+     *
+     * @param {Object} subLayer - The sublayer for which to add captions.
+     */
+    const addSubLayerCaptions = (subLayer) => {
+      if (subLayer) {
+        const layerCaption = layersInfo[subLayer]?.caption;
+        if (layerCaption) {
+          const message = `Lagret "${layerCaption}" är inte synligt vid aktuell zoomnivå.`;
+
+          this.zoomWarningSnack = this.props.enqueueSnackbar(message, {
+            variant: "warning",
+            preventDuplicate: false,
+            onClose: () => {
+              this.zoomWarningSnack = null;
+            },
+          });
+        }
+      }
+    };
+
+    // Check if isGroupLayer is true and sublayer is an array.
+    if (isGroupLayer && Array.isArray(sublayer)) {
+      // Iterate through the sublayer array and call addSubLayerCaptions for each subLayer.
+      sublayer.forEach((subLayer) => {
+        addSubLayerCaptions(subLayer);
+      });
+    } else if (sublayer) {
+      // Check if sublayer is defined (not undefined or null).
+      addSubLayerCaptions(sublayer);
+    } else {
+      // If sublayer is undefined, iterate through the visibleLayers array and call addSubLayerCaptions for each subLayer.
+      visibleLayers.forEach((subLayer) => {
+        addSubLayerCaptions(subLayer);
+      });
+    }
+  }
+
+  /**
+   * Returns a checkbox element for the layer group.
+   *
+   * This function creates and returns a checkbox element for the layer group. The checkbox
+   * will toggle the visibility of the layer group when clicked.
+   *
+   * @returns {ReactElement} - A checkbox element for the layer group.
+   */
+  getCheckBox() {
+    const { layer } = this.props;
+    const { visible, visibleSubLayers } = this.state;
+    return (
+      <CheckBoxWrapper>
+        {!visible ? (
+          <CheckBoxOutlineBlankIcon />
+        ) : visibleSubLayers.length !== layer.subLayers.length ? (
+          <CheckBoxIcon sx={{ fill: "gray" }} />
+        ) : (
+          <CheckBoxIcon />
+        )}
+      </CheckBoxWrapper>
+    );
+  }
+
+  render() {
+    const { cqlFilterVisible, layer } = this.props;
+    const { open, toggleSettings, infoVisible } = this.state;
+
     const legendIcon = layer.get("layerInfo").legendIcon;
     return (
-      <div
-        className={cslx(classes.layerGroup, {
-          [classes.layerGroupWithoutExpandArrow]: this.hideExpandArrow === true,
-        })}
+      <Grid
+        sx={{
+          marginLeft: this.hideExpandArrow ? "45px" : "21px",
+        }}
       >
-        <div className={classes.layerGroupContainer}>
-          <div className={classes.layerGroupWrapper}>
-            {this.hideExpandArrow === false && (
-              <div className={classes.arrowIcon}>
-                {open ? (
-                  <ArrowDropDownIcon
-                    className={classes.button}
-                    onClick={() => this.toggle()}
-                  />
-                ) : (
-                  <ArrowRightIcon
-                    className={classes.button}
-                    onClick={() => this.toggle()}
-                  />
-                )}
-              </div>
-            )}
-            <div className={classes.layerGroupHeader}>
-              <div className={classes.layerItemInfo}>
-                <div
-                  className={classes.caption}
-                  onClick={this.toggleVisible(this.props.layer)}
-                >
-                  <div
-                    onClick={this.toggleGroupVisible(layer)}
-                    className={classes.caption}
-                  >
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      {getIcon()}
-                      {legendIcon && this.renderLegendIcon(legendIcon)}
-                      <Typography className={classes.layerGroupTypography}>
-                        <label className={classes.captionText}>
-                          {layer.get("caption")}
-                        </label>
-                      </Typography>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={classes.layerButtons}>
+        <Grid container alignItems="center" wrap="nowrap">
+          {this.hideExpandArrow === false && (
+            <ExpandButtonWrapper>
+              {open ? (
+                <KeyboardArrowDownIcon onClick={() => this.toggle()} />
+              ) : (
+                <KeyboardArrowRightIcon onClick={() => this.toggle()} />
+              )}
+            </ExpandButtonWrapper>
+          )}
+          <LayerInfo>
+            <LayerSummaryContainer>
+              <Grid
+                container
+                alignItems="center"
+                wrap="nowrap"
+                onClick={this.toggleGroupVisible(layer)}
+              >
+                <Grid item>{this.getCheckBox()}</Grid>
+                {legendIcon && this.renderLegendIcon(legendIcon)}
+                <Caption>{layer.get("caption")}</Caption>
+              </Grid>
+              <SummaryButtonsContainer>
                 {this.renderStatus()}
                 {this.renderInfoToggler()}
-                <div className={classes.layerButton}>
-                  {this.state.toggleSettings ? (
+                <SummaryButtonWrapper>
+                  {toggleSettings ? (
                     <CloseIcon onClick={() => this.toggleSettings()} />
                   ) : (
-                    <MoreHorizIcon
-                      onClick={() => this.toggleSettings()}
-                      className={classes.settingsButton}
-                    />
+                    <MoreHorizIcon onClick={() => this.toggleSettings()} />
                   )}
-                </div>
-              </div>
-            </div>
-          </div>
-          {this.renderDetails()}
-          {this.state.toggleSettings &&
-          this.state.infoVisible &&
-          !this.isInfoEmpty() ? (
-            <hr />
-          ) : null}
-          <div>
-            <LayerSettings
-              options={this.props.options}
-              layer={layer}
-              cqlFilterVisible={cqlFilterVisible}
-              observer={this.props.model.observer}
-              toggled={this.state.toggleSettings}
-              showOpacity={true}
-              showLegend={false}
-            />
-          </div>
-          {this.renderSubLayers()}
+                </SummaryButtonWrapper>
+              </SummaryButtonsContainer>
+            </LayerSummaryContainer>
+          </LayerInfo>
+        </Grid>
+        {this.renderDetails()}
+        {toggleSettings && infoVisible && !this.isInfoEmpty() ? <hr /> : null}
+        <div>
+          <LayerSettings
+            options={this.props.options}
+            layer={layer}
+            cqlFilterVisible={cqlFilterVisible}
+            observer={this.props.model.observer}
+            toggled={toggleSettings}
+            showOpacity={true}
+            showLegend={false}
+          />
         </div>
-      </div>
+        {this.renderSubLayers()}
+      </Grid>
     );
   }
 }
 
-export default withStyles(styles)(LayerGroupItem);
+export default withSnackbar(LayerGroupItem);

@@ -49,9 +49,18 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from "@material-ui/core";
+} from "@mui/material";
 
-import { styled } from "@material-ui/core/styles";
+import { styled } from "@mui/material/styles";
+
+// Prepare a global variable that will hold Hajk's infoclick options
+let infoclickOptions = null;
+
+// Export the setter that allows other modules to import this function
+// and set the internal options
+export const setOptions = (opts) => {
+  infoclickOptions = opts;
+};
 
 export const Paragraph = styled(Typography)(() => ({
   marginBottom: "1.1rem",
@@ -137,9 +146,19 @@ export const customComponentsForReactMarkdown = {
     return !children ? null : <Paragraph variant="body2">{children}</Paragraph>;
   },
   hr: () => <Divider />,
-  a: ({ children, href, title }) => {
+  a: ({ children, href, title, target }) => {
+    // Grab color and underline from options. Fallback to default MUI values if no settings exist.
+    // Also, see #1106.
+    const { linksColor = "primary", linksUnderline = "always" } =
+      infoclickOptions || {};
     return children ? (
-      <Link href={href} title={title} target="_blank">
+      <Link
+        href={href}
+        title={title}
+        target={target || "_blank"}
+        color={linksColor}
+        underline={linksUnderline}
+      >
         {children}
       </Link>
     ) : null;

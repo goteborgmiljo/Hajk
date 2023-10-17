@@ -1,5 +1,5 @@
 {
-  "version": "3.5.0",
+  "version": "3.9.0",
   "projections": [
     {
       "code": "EPSG:3006",
@@ -273,17 +273,10 @@
       "index": 2
     },
     {
-      "type": "draw",
+      "type": "sketch",
       "options": {
         "target": "left",
         "position": "left",
-        "height": 650,
-        "exportUrl": "",
-        "importUrl": "",
-        "base64Encode": false,
-        "instruction": "",
-        "icons": "",
-        "proxyUrl": "",
         "visibleForGroups": []
       },
       "index": 3
@@ -441,7 +434,7 @@
       "index": 15
     },
     {
-      "type": "bookmark",
+      "type": "bookmarks",
       "options": {
         "target": "toolbar",
         "instruction": "",
@@ -464,6 +457,7 @@
     {
       "type": "print",
       "options": {
+        "date": "Utskriftsdatum: {date}",
         "target": "left",
         "position": "left",
         "scales": "200, 400, 1000, 2000, 5000, 10000, 25000, 50000, 100000, 200000, 400000, 800000, 1000000, 5000000, 10000000",
@@ -569,5 +563,6 @@
     "defaultCookieNoticeUrl": "https://pts.se/sv/bransch/regler/lagar/lag-om-elektronisk-kommunikation/kakor-cookies/",
     "crossOrigin": "anonymous",
     "cookieUse3dPart": false,
+    "showRecentlyUsedPlugins": false
   }
 }

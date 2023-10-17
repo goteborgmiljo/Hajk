@@ -75,6 +75,8 @@ class WMTSLayer {
       visible: config.visible,
       queryable: config.queryable,
       opacity: config.opacity,
+      zIndex: config.zIndex,
+      layerType: config.layerType,
       source: new WMTS(source),
       layerInfo: new LayerInfo(config),
       minZoom: minZoom,

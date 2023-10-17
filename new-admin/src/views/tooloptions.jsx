@@ -5,6 +5,8 @@ import Buffer from "./tools/buffer.jsx";
 import Bookmarks from "./tools/bookmarks.jsx";
 import Coordinates from "./tools/coordinates.jsx";
 import Draw from "./tools/draw.jsx";
+import LayerComparer from "./tools/layercomparer.jsx";
+import Sketch from "./tools/sketch.jsx";
 import Edit from "./tools/edit.jsx";
 import Export from "./tools/export.jsx";
 import FmeServer from "./tools/fmeServer.jsx";
@@ -17,12 +19,14 @@ import Search from "./tools/search.jsx";
 import StreetView from "./tools/streetview.jsx";
 import Preset from "./tools/preset.jsx";
 import Measure from "./tools/measure.jsx";
+import Measurer from "./tools/measurer.jsx";
 import Routing from "./tools/routing.jsx";
 import Collector from "./tools/collector.jsx";
 import Dummy from "./tools/dummy.jsx";
 import MenuEditor from "./tools/MenuEditor/menuEditor.jsx";
 import TimeSlider from "./tools/timeslider.jsx";
 import GeosuiteExport from "./tools/geosuiteExport.jsx";
+import ExternalLinks from "./tools/externalLink.jsx";
 
 var defaultState = {
   activeTool: "",
@@ -75,6 +79,10 @@ class ToolOptions extends Component {
         return <Coordinates parent={this} model={this.props.model} />;
       case "draw":
         return <Draw parent={this} model={this.props.model} />;
+      case "layercomparer":
+        return <LayerComparer parent={this} model={this.props.model} />;
+      case "sketch":
+        return <Sketch parent={this} model={this.props.model} />;
       case "edit":
         return <Edit parent={this} model={this.props.model} />;
       case "export":
@@ -99,8 +107,12 @@ class ToolOptions extends Component {
         return <StreetView parent={this} model={this.props.model} />;
       case "preset":
         return <Preset parent={this} model={this.props.model} />;
+      case "externalLinks":
+        return <ExternalLinks parent={this} model={this.props.model} />;
       case "measure":
         return <Measure parent={this} model={this.props.model} />;
+      case "measurer":
+        return <Measurer parent={this} model={this.props.model} />;
       case "routing":
         return <Routing parent={this} model={this.props.model} />;
       case "collector":
@@ -158,6 +170,8 @@ class ToolOptions extends Component {
       bookmarks: "Bokmärken",
       coordinates: "Fånga koordinat",
       draw: "Rita och mäta",
+      layercomparer: "Jämför lager sida vid sida",
+      sketch: "Rita och mäta (Version 2)",
       edit: "Editering",
       export: "Utskrift",
       fmeServer: "FME-server",
@@ -168,14 +182,16 @@ class ToolOptions extends Component {
       search: "Sök",
       streetview: "Google Street View",
       preset: "Snabbval",
+      externalLinks: "Externa länkar",
       measure: "Mät",
+      measurer: "Mät (Version 2)",
       location: "Visa min position",
       routing: "Navigation",
       collector: "Tyck till",
       dummy: "Dummy plugin",
       timeslider: "Tidslinje",
       documenthandler: "Dokumenthanterare 2.0",
-      geosuiteexport: "GeoSuite export"
+      geosuiteexport: "GeoSuite export",
     };
 
     return (

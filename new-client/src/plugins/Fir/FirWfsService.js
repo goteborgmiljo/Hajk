@@ -120,7 +120,7 @@ class FirWfsService {
   }
 
   nestedSearch(data, params, resolve, reject) {
-    // Search by FNR
+    // Search by ID
 
     let ids = [];
     data.features.forEach((feature) => {
@@ -186,6 +186,14 @@ class FirWfsService {
           return response ? response.json() : null;
         })
         .then((data) => {
+          if (data.features?.length) {
+            data.features = data.features.filter((feature) => {
+              return feature.properties[_params.searchType.idField]
+                ? true
+                : false;
+            });
+          }
+
           if (isDesignationSearch || data.features?.length === 0) {
             try {
               // handle parser error

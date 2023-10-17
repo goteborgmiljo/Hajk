@@ -194,6 +194,7 @@ class Manager extends Component {
           infoText: layer.infoText,
           infoUrl: layer.infoUrl,
           infoUrlText: layer.infoUrlText,
+          infoOpenDataLink: layer.infoOpenDataLink,
           infoOwner: layer.infoOwner,
         });
 
@@ -217,7 +218,12 @@ class Manager extends Component {
           internalLayerName: layer.internalLayerName,
           content: layer.content,
           date: layer.date,
+          icon: layer.icon || "",
           infobox: layer.infobox,
+          infoclickIcon: layer.infoclickIcon,
+          displayFields: layer.displayFields,
+          secondaryLabelFields: layer.secondaryLabelFields,
+          shortDisplayFields: layer.shortDisplayFields,
           legend: layer.legend,
           legendIcon: layer.legendIcon,
           owner: layer.owner,
@@ -225,10 +231,10 @@ class Manager extends Component {
           queryable: layer.queryable,
           filterable: layer.filterable || false,
           projection: layer.projection,
-          lineWidth: layer.lineWidth || "3",
-          lineStyle: layer.lineStyle || "solid",
-          lineColor: layer.lineColor || "rgba(0, 0, 0, 0.5)",
-          fillColor: layer.fillColor || "rgba(255, 255, 255, 0.5)",
+          lineWidth: layer.lineWidth || "",
+          lineStyle: layer.lineStyle || "",
+          lineColor: layer.lineColor || "",
+          fillColor: layer.fillColor || "",
           opacity: layer.opacity,
           minZoom: layer.minZoom,
           maxZoom: layer.maxZoom,
@@ -260,6 +266,7 @@ class Manager extends Component {
           infoText: layer.infoText,
           infoUrl: layer.infoUrl,
           infoUrlText: layer.infoUrlText,
+          infoOpenDataLink: layer.infoOpenDataLink,
           infoOwner: layer.infoOwner,
           timeSliderVisible: layer.timeSliderVisible,
           timeSliderStart: layer.timeSliderStart,
@@ -321,6 +328,7 @@ class Manager extends Component {
           infoText: layer.infoText,
           infoUrl: layer.infoUrl,
           infoUrlText: layer.infoUrlText,
+          infoOpenDataLink: layer.infoOpenDataLink,
           infoOwner: layer.infoOwner,
           timeSliderVisible: layer.timeSliderVisible,
           timeSliderStart: layer.timeSliderStart,
@@ -365,6 +373,7 @@ class Manager extends Component {
           infoText: layer.infoText,
           infoUrl: layer.infoUrl,
           infoUrlText: layer.infoUrlText,
+          infoOpenDataLink: layer.infoOpenDataLink,
           infoOwner: layer.infoOwner,
           timeSliderVisible: layer.timeSliderVisible,
           timeSliderStart: layer.timeSliderStart,
@@ -451,15 +460,15 @@ class Manager extends Component {
     });
   }
 
-  getLayersWithFilter(filter) {
+  getLayersWithFilter() {
     return this.props.model.get("layers").filter((layer) => {
+      const caption = layer.caption.toLowerCase();
+      const internalLayerName = layer.internalLayerName?.toLowerCase() || "";
+      const filter = this.state.filter.toLowerCase();
       return (
-        new RegExp(this.state.filter.toLowerCase()).test(
-          layer.caption.toLowerCase()
-        ) ||
-        new RegExp(this.state.filter.toLowerCase()).test(
-          layer.internalLayerName?.toLowerCase()
-        )
+        caption.includes(filter) ||
+        internalLayerName.includes(filter) ||
+        layer.id.includes(filter)
       );
     });
   }

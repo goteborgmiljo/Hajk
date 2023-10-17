@@ -28,7 +28,6 @@ export default class ConfigMapper {
           args.layersInfo[getIndex].style;
 
         let geoserverLegendOptions = "";
-        let qgisOptions = "";
 
         if (args.serverType === "geoserver") {
           /**
@@ -44,25 +43,26 @@ export default class ConfigMapper {
             : "";
         }
 
-        // QGIS Server requires the SERVICE parameter to be set, see issue #880.
-        if (args.serverType === "qgis") {
-          qgisOptions = "&SERVICE=WMS";
-        }
-
         // If layers URL already includes a query string separator (ie question mark), we want
         // to append the remaining values with &.
         const theGlue = args.url.includes("?") ? "&" : "?";
 
-        legendUrl = `${proxy}${args.url}${theGlue}REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=${layer}&STYLE=${style}${geoserverLegendOptions}${qgisOptions}`;
+        // There might be a custom get-map url specified. The customGetMapUrl naming is a bit
+        // confusing, since this custom url should not only be used for getMap-requests... The custom
+        // url should be used for all requests, and the 'ordinary' url (args.url) should only be used
+        // for the getCapabilities-request (used in admin). The custom url is used as a work around so
+        // that problems linked to reverse-proxies can be avoided.
+        // Let's check if there is a custom url, and if there is we'll use that one instead of the 'ordinary' url:
+        const baseUrl = args.customGetMapUrl || args.url;
+        // Then we can create the legend-url by combining all the necessary search-params end so on...
+        legendUrl = `${proxy}${baseUrl}${theGlue}SERVICE=WMS&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=${layer}&STYLE=${style}${geoserverLegendOptions}`;
       }
       // If there's a legend URL specified in admin, use it as is
       else {
         legendUrl = args.legend;
       }
 
-      // If 'legend' URL doesn't start with "http", add "https://" prior 'legend', else let it be as is
-      const protocol = /^http/.test(legendUrl) ? "" : "https://";
-      return protocol + legendUrl;
+      return legendUrl;
     }
 
     function getLegends() {
@@ -132,6 +132,7 @@ export default class ConfigMapper {
         caption: args.caption,
         visible: args.visibleAtStart,
         opacity: args.opacity || 1,
+        zIndex: args.drawOrder || 0,
         maxZoom: args.maxZoom,
         minZoom: args.minZoom,
         minMaxZoomAlertOnToggleOnly: args.minMaxZoomAlertOnToggleOnly,
@@ -145,6 +146,8 @@ export default class ConfigMapper {
         extent: properties.mapConfig.map.extent,
         singleTile: args.singleTile || false,
         hidpi: args.hidpi,
+        useCustomDpiList: args.useCustomDpiList,
+        customDpiList: args.customDpiList,
         customRatio: args.customRatio,
         imageFormat: args.imageFormat || "image/png",
         serverType:
@@ -153,6 +156,7 @@ export default class ConfigMapper {
             : args.serverType || "geoserver",
         crossOrigin: properties.mapConfig.map.crossOrigin || "anonymous",
         attribution: args.attribution,
+        showAttributeTableButton: args.showAttributeTableButton,
         searchUrl: args.searchUrl,
         searchPropertyName: args.searchPropertyName,
         searchDisplayName: args.searchDisplayName,
@@ -179,10 +183,12 @@ export default class ConfigMapper {
         infoText: args.infoText,
         infoUrl: args.infoUrl,
         infoUrlText: args.infoUrlText,
+        infoOpenDataLink: args.infoOpenDataLink,
         infoOwner: args.infoOwner,
         hideExpandArrow: args.hideExpandArrow,
         timeSliderStart: args.timeSliderStart,
         timeSliderEnd: args.timeSliderEnd,
+        visibleAtStartSubLayers: args.visibleAtStartSubLayers,
       },
     };
 
@@ -227,6 +233,7 @@ export default class ConfigMapper {
         extent: properties.mapConfig.map.extent,
         queryable: false,
         opacity: args.opacity || 1,
+        zIndex: args.drawOrder || 0,
         maxZoom: args.maxZoom,
         minZoom: args.minZoom,
         format: "image/png",
@@ -248,6 +255,7 @@ export default class ConfigMapper {
         infoText: args.infoText,
         infoUrl: args.infoUrl,
         infoUrlText: args.infoUrlText,
+        infoOpenDataLink: args.infoOpenDataLink,
         infoOwner: args.infoOwner,
         hideExpandArrow: args.hideExpandArrow,
         timeSliderStart: args.timeSliderStart,
@@ -268,6 +276,7 @@ export default class ConfigMapper {
         caption: args.caption,
         visible: args.visibleAtStart,
         opacity: 1,
+        zIndex: args.drawOrder || 0,
         queryable: args.queryable !== false,
         extent: args.extent,
         projection: args.projection,
@@ -285,18 +294,24 @@ export default class ConfigMapper {
         caption: args.caption,
         content: args.content,
         dataFormat: args.dataFormat,
+        fillColor: args.fillColor,
         filterable: args.filterable,
         filterAttribute: args.filterAttribute,
         filterComparer: args.filterComparer,
         filterValue: args.filterValue,
-        icon: args.legend,
+        icon: args.icon,
         id: args.id,
         infoOwner: args.infoOwner,
         information: args.infobox,
+        displayFields: args.displayFields,
+        secondaryLabelFields: args.secondaryLabelFields,
+        shortDisplayFields: args.shortDisplayFields,
+        infoclickIcon: args.infoclickIcon,
         infoText: args.infoText,
         infoTitle: args.infoTitle,
         infoUrl: args.infoUrl,
         infoUrlText: args.infoUrlText,
+        infoOpenDataLink: args.infoOpenDataLink,
         infoVisible: args.infoVisible || false,
         infoClickSortType: args.infoClickSortType,
         infoClickSortDesc: args.infoClickSortDesc,
@@ -309,6 +324,9 @@ export default class ConfigMapper {
           },
         ],
         legendIcon: args.legendIcon,
+        lineColor: args.lineColor,
+        lineStyle: args.lineStyle,
+        lineWidth: args.lineWidth,
         maxZoom: args.maxZoom,
         minZoom: args.minZoom,
         name: args.id,
@@ -327,15 +345,19 @@ export default class ConfigMapper {
           srsname: args.projection,
           bbox: "",
         },
+        pointSize: args.pointSize,
         projection: args.projection,
         queryable: args.queryable,
         sldStyle: args.sldStyle,
         sldText: args.sldText,
         sldUrl: args.sldUrl,
+        symbolXOffset: args.symbolXOffset,
+        symbolYOffset: args.symbolYOffset,
         url: args.url,
         visible: args.visibleAtStart,
         timeSliderStart: args.timeSliderStart,
         timeSliderEnd: args.timeSliderEnd,
+        zIndex: args.drawOrder || 0,
       },
     };
 
@@ -384,10 +406,12 @@ export default class ConfigMapper {
         infoText: args.infoText,
         infoUrl: args.infoUrl,
         infoUrlText: args.infoUrlText,
+        infoOpenDataLink: args.infoOpenDataLink,
         infoOwner: args.infoOwner,
         hideExpandArrow: args.hideExpandArrow,
         timeSliderStart: args.timeSliderStart,
         timeSliderEnd: args.timeSliderEnd,
+        zIndex: args.drawOrder || 0,
       },
     };
 

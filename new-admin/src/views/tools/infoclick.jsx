@@ -11,6 +11,8 @@ var defaultState = {
   index: 0,
   visibleForGroups: [],
   title: "Infoclick",
+  linksColor: "primary",
+  linksUnderline: "always",
   position: "right",
   width: 400,
   height: 300,
@@ -22,6 +24,9 @@ var defaultState = {
   anchorX: 0.5,
   anchorY: 1,
   allowDangerousHtml: true,
+  useNewInfoclick: false,
+  useNewPlaceholderMatching: false,
+  transformLinkUri: true,
 };
 
 const ColorButtonBlue = withStyles((theme) => ({
@@ -52,6 +57,8 @@ class ToolOptions extends Component {
         index: tool.index,
         title: tool.options.title,
         position: tool.options.position,
+        linksColor: tool.options.linksColor,
+        linksUnderline: tool.options.linksUnderline,
         width: tool.options.width,
         height: tool.options.height,
         src: tool.options.src,
@@ -63,6 +70,13 @@ class ToolOptions extends Component {
         anchorY: tool.options.anchor[1] || this.state.anchorY,
         allowDangerousHtml:
           tool.options.allowDangerousHtml || this.state.allowDangerousHtml,
+        useNewInfoclick:
+          tool.options.useNewInfoclick || this.state.useNewInfoclick,
+        useNewPlaceholderMatching:
+          tool.options.useNewPlaceholderMatching ||
+          this.state.useNewPlaceholderMatching,
+        transformLinkUri:
+          tool.options.transformLinkUri ?? this.state.transformLinkUri,
         visibleForGroups: tool.options.visibleForGroups
           ? tool.options.visibleForGroups
           : [],
@@ -124,6 +138,8 @@ class ToolOptions extends Component {
       options: {
         title: this.state.title,
         position: this.state.position,
+        linksColor: this.state.linksColor,
+        linksUnderline: this.state.linksUnderline,
         width: this.state.width,
         height: this.state.height,
         anchor: [this.state.anchorX, this.state.anchorY],
@@ -133,6 +149,9 @@ class ToolOptions extends Component {
         strokeWidth: this.state.strokeWidth,
         fillColor: this.state.fillColor,
         allowDangerousHtml: this.state.allowDangerousHtml,
+        useNewInfoclick: this.state.useNewInfoclick,
+        useNewPlaceholderMatching: this.state.useNewPlaceholderMatching,
+        transformLinkUri: this.state.transformLinkUri,
         visibleForGroups: this.state.visibleForGroups.map(
           Function.prototype.call,
           String.prototype.trim
@@ -361,6 +380,105 @@ class ToolOptions extends Component {
             &nbsp;
             <label htmlFor="allowDangerousHtml">Tillåt HTML i infoclick</label>
           </div>
+          <div>
+            <input
+              id="useNewInfoclick"
+              name="useNewInfoclick"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.useNewInfoclick}
+            />
+            &nbsp;
+            <label htmlFor="useNewInfoclick" style={{ width: "auto" }}>
+              Använd ny Infoclick-variant (se GitHub issue #1034)
+            </label>
+          </div>
+          <div>
+            <input
+              id="useNewPlaceholderMatching"
+              name="useNewPlaceholderMatching"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.useNewPlaceholderMatching}
+            />
+            &nbsp;
+            <label
+              htmlFor="useNewPlaceholderMatching"
+              style={{ width: "auto" }}
+            >
+              Tillåt fler tecken, bl a MarkDown, som del av infoclicks{" "}
+              <i>placeholder</i> (se GitHub issue #1368)
+            </label>
+          </div>
+          <div>
+            <input
+              id="transformLinkUri"
+              name="transformLinkUri"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.transformLinkUri}
+            />
+            &nbsp;
+            <label htmlFor="transformLinkUri" style={{ width: "auto" }}>
+              URL-verifiering aktiverad. (Verifieringen måste avaktiveras för
+              att tillåta länkar till desktop-programvaror.)
+            </label>
+          </div>
+          <div className="separator">Länkarnas utseende</div>
+
+          <div>
+            <label htmlFor="linksColor">
+              Färg{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Länkarnas färg. Se MUI:s dokumentation på https://mui.com/material-ui/react-link/"
+              />
+            </label>
+            <select
+              id="linksColor"
+              name="linksColor"
+              className="control-fixed-width"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              value={this.state.linksColor}
+            >
+              <option value="primary">primary</option>
+              <option value="secondary">secondary</option>
+              <option value="inherit">inherit</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="linksUnderline">
+              Understuket{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Om länktexten ska vara understruken. Se MUI:s dokumentation på https://mui.com/material-ui/react-link/"
+              />
+            </label>
+            <select
+              id="linksUnderline"
+              name="linksUnderline"
+              className="control-fixed-width"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              value={this.state.linksUnderline}
+            >
+              <option value="always">always</option>
+              <option value="hover">hover</option>
+              <option value="no">no</option>
+            </select>
+          </div>
+
           <div className="separator">Ikon och markering</div>
           <div>
             <label htmlFor="src">URL till bild</label>
@@ -368,7 +486,7 @@ class ToolOptions extends Component {
               value={this.state.src}
               type="text"
               name="src"
-              placeholder={defaultState.src}
+              placeholder="Lämnas tomt för en cirkel, alternativ ange URL till ikon."
               onChange={(e) => {
                 this.handleInputChange(e);
               }}

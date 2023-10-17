@@ -23,15 +23,17 @@ const defaultState = {
   visibleAtStart: false,
   services: {
     trimble: {
-      url: "https://geoarkiv-api.goteborg.se/prod",
+      url: "",
       projectDetailsMethod: "/investigation",
-      exportMethod: "/export"
+      exportMethod: "/export",
     },
     wfs: {
       projects: {
+        active: true,
         layer: {
           id: "",
           geometryField: "geom",
+          url: "",
         },
         spatialFilter: "intersects",
         attributes: {
@@ -41,42 +43,59 @@ const defaultState = {
         maxFeatures: 50,
       },
       boreholes: {
+        active: true,
         layer: {
           id: "",
           geometryField: "geom",
+          url: "",
         },
         attributes: {
           external_id: "externt_id",
           external_project_id: "externt_projekt_id",
         },
         maxFeatures: 0,
-      }
-    }
+      },
+    },
   },
   view: {
-    termsAndConditionsLink: "https://goteborg.se/wps/portal/om-webbplatsen",
-    errorMessage: "Kunde inte hämta resultat. Vänligen försök igen. Kontakta oss om felet kvarstår.",
-    digitizeDescription: "Rita ditt område i kartan, avsluta genom att dubbelklicka.",
+    termsAndConditionsLink: "",
+    errorMessage:
+      "Kunde inte hämta resultat. Vänligen försök igen. Kontakta oss om felet kvarstår.",
+    digitizeDescription:
+      "Rita ditt område i kartan, avsluta genom att dubbelklicka.",
     projects: {
       order: {
-        description: "Välj geoteknisk utredning nedan för att hämta motsvarande handlingar.",
+        description:
+          "Välj geoteknisk utredning nedan för att hämta motsvarande handlingar.",
+      },
+      confirmation: {
+        header: "Tack för din beställning!",
+        informationText: "Nedladdning av dina filer är klar.",
+        whereNextText:
+          "Klicka på VÄLJ MER för att hämta mer data för ditt markerade område eller gå vidare med KLAR.",
       },
     },
     boreholes: {
       order: {
-        intro: "Nedan visas alla borrhålsprojekt med undersökningspunkter inom det markerade området.",
-        description: "Välj om du vill ladda ner hela borrhålsprojektet eller endast punkter inom markering. Du kan välja generellt för alla eller ställa in för varje projekt.",
-        referenceSystemText: "Geotekniska undersökningspunkter är i koordinatsystemet SWEREF 99 12 00 samt höjdsystemet RH2000.",
-        informationText: "Informationen levereras i GeoSuite Toolbox-format via en länk som du får skickad till din e-postadress. För att kunna genomföra beställningen krävs att e-postadressen är registrerad i Geoarkivets molntjänst.",
+        intro:
+          "Nedan visas alla borrhålsprojekt med undersökningspunkter inom det markerade området.",
+        description:
+          "Välj om du vill ladda ner hela borrhålsprojektet eller endast punkter inom markering. Du kan välja generellt för alla eller ställa in för varje projekt.",
+        referenceSystemText:
+          "Geotekniska undersökningspunkter är i koordinatsystemet SWEREF 99 12 00 samt höjdsystemet RH2000.",
+        informationText:
+          "Informationen levereras i GeoSuite Toolbox-format via en länk som du får skickad till din e-postadress. För att kunna genomföra beställningen krävs att e-postadressen är registrerad i Geoarkivets molntjänst.",
         informationLink: {
           linkText: "",
           linkHref: "",
-        }
+        },
       },
       confirmation: {
         header: "Tack för din beställning!",
-        informationText: "Ett e-postmeddelande med vidare instruktioner kommer att skickas till dig.",
-        whereNextText: "Klicka på VÄLJ MER för att hämta mer data för ditt markerade område eller gå vidare med KLAR.",
+        informationText:
+          "Ett e-postmeddelande med vidare instruktioner kommer att skickas till dig.",
+        whereNextText:
+          "Klicka på VÄLJ MER för att hämta mer data för ditt markerade område eller gå vidare med KLAR.",
       },
     },
   },
@@ -105,7 +124,7 @@ class ToolOptions extends Component {
       });
     } else {
       this.setState({
-        active: false
+        active: false,
       });
     }
   }
@@ -118,13 +137,15 @@ class ToolOptions extends Component {
    * @param {*} value new value to set on specified state key
    */
   getUpdatedStateProp = (obj, propPath, value) => {
-    const [head, ...tail] = propPath.split('__');
+    const [head, ...tail] = propPath.split("__");
 
     if (!tail || !tail.length) {
       if (!obj) {
         console.warn(
           "geosuiteExport.jsx: getUpdatedStateProp - Internal error: cannot set key '%s' to '%value' since object is undefined",
-          head, propPath, value
+          head,
+          propPath,
+          value
         );
         return {};
       }
@@ -132,9 +153,9 @@ class ToolOptions extends Component {
       return obj;
     }
     const parentObject = obj[head];
-    this.getUpdatedStateProp(parentObject, tail.join('__'), value);
+    this.getUpdatedStateProp(parentObject, tail.join("__"), value);
     return parentObject;
-  }
+  };
 
   handleInputChange(event) {
     const target = event.target;
@@ -144,18 +165,18 @@ class ToolOptions extends Component {
       value = !isNaN(Number(value)) ? Number(value) : value;
     }
 
-    const [head, ...tail] = name.split('__');
+    const [head, ...tail] = name.split("__");
     var newState;
     if (!tail || !tail.length) {
       newState = {
-        [name]: value
+        [name]: value,
       };
     } else {
       const currentState = {
-        [head]: this.state[head]
+        [head]: this.state[head],
       };
       newState = {
-        [head]: this.getUpdatedStateProp(currentState, name, value)
+        [head]: this.getUpdatedStateProp(currentState, name, value),
       };
     }
     this.setState(newState);
@@ -207,7 +228,8 @@ class ToolOptions extends Component {
 
     function update() {
       this.props.model.updateToolConfig(
-        this.props.model.get("toolConfig"), (success) => {
+        this.props.model.get("toolConfig"),
+        (success) => {
           if (success) {
             this.props.parent.props.parent.setState({
               alert: true,
@@ -386,7 +408,9 @@ class ToolOptions extends Component {
             </select>
           </div>
 
-          <div className="separator">Tjänsteinställningar - Trimble GeoSuite Archive API</div>
+          <div className="separator">
+            Tjänsteinställningar - Trimble GeoSuite Archive API
+          </div>
           <div>
             <label htmlFor="services__trimble__url">
               Basadress{" "}
@@ -407,14 +431,36 @@ class ToolOptions extends Component {
             />
           </div>
 
-          <div className="separator">Tjänsteinställningar - Söklager Geotekniska utredningar</div>
+          <div className="separator">
+            Tjänsteinställningar - Söklager Geotekniska utredningar
+          </div>
+          <div>
+            <input
+              id="services__wfs__projects__active"
+              name="services__wfs__projects__active"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.services.wfs.projects.active}
+            />
+            &nbsp;
+            <label htmlFor="services__wfs__projects__active">
+              Aktiverad{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Aktivera alternativet i verktyget. Ej valbart om rutan inte är ikryssad."
+              />
+            </label>
+          </div>
           <div>
             <label htmlFor="services__wfs__projects__layer__id">
               Söklager, id{" "}
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
-                title="Söklager-id för referens till lager konfigurerat i layers.json. Observera att lagret måste vara aktivt i verktyget Sök."
+                title="Söklager-id för referens till lager konfigurerat i layers.json."
               />
             </label>
             <input
@@ -443,7 +489,28 @@ class ToolOptions extends Component {
               onChange={(e) => {
                 this.handleInputChange(e);
               }}
-              value={this.state.services.wfs.projects.layer?.geometryField || ""}
+              value={
+                this.state.services.wfs.projects.layer?.geometryField || ""
+              }
+            />
+          </div>
+          <div>
+            <label htmlFor="services__wfs__projects__layer__url">
+              WFS-adress{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="WFS-adress till tjänsten."
+              />
+            </label>
+            <input
+              type="text"
+              id="services__wfs__projects__layer__url"
+              name="services__wfs__projects__layer__url"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              value={this.state.services.wfs.projects.layer?.url || ""}
             />
           </div>
           <div>
@@ -490,7 +557,7 @@ class ToolOptions extends Component {
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
-                title="Ange max antal WFS sökträffar. Ange -1 för obegränsat antal."
+                title="Ange max antal WFS sökträffar. Ange 0 för obegränsat antal."
               />
             </label>
             <input
@@ -506,14 +573,36 @@ class ToolOptions extends Component {
             />
           </div>
 
-          <div className="separator">Tjänsteinställningar - Söklager GeoSuite-format</div>
+          <div className="separator">
+            Tjänsteinställningar - Söklager GeoSuite-format
+          </div>
+          <div>
+            <input
+              id="services__wfs__boreholes__active"
+              name="services__wfs__boreholes__active"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.services.wfs.boreholes.active}
+            />
+            &nbsp;
+            <label htmlFor="services__wfs__boreholes__active">
+              Aktiverad{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Aktivera alternativet i verktyget. Ej valbart om rutan inte är ikryssad."
+              />
+            </label>
+          </div>
           <div>
             <label htmlFor="services__wfs__boreholes__layer__id">
               Söklager, id{" "}
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
-                title="Söklager-id för referens till lager konfigurerat i layers.json. Observera att lagret måste vara aktivt i verktyget Sök."
+                title="Söklager-id för referens till lager konfigurerat i layers.json."
               />
             </label>
             <input
@@ -528,7 +617,7 @@ class ToolOptions extends Component {
           </div>
           <div>
             <label htmlFor="services__wfs__boreholes__layer__geometryField">
-            Geometriattribut{" "}
+              Geometriattribut{" "}
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
@@ -542,7 +631,28 @@ class ToolOptions extends Component {
               onChange={(e) => {
                 this.handleInputChange(e);
               }}
-              value={this.state.services.wfs.boreholes.layer?.geometryField || ""}
+              value={
+                this.state.services.wfs.boreholes.layer?.geometryField || ""
+              }
+            />
+          </div>
+          <div>
+            <label htmlFor="services__wfs__boreholes__layer__url">
+              WFS-adress{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="WFS-adress till tjänsten."
+              />
+            </label>
+            <input
+              type="text"
+              id="services__wfs__boreholes__layer__url"
+              name="services__wfs__boreholes__layer__url"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              value={this.state.services.wfs.boreholes.layer?.url || ""}
             />
           </div>
           <div>
@@ -580,7 +690,9 @@ class ToolOptions extends Component {
               onChange={(e) => {
                 this.handleInputChange(e);
               }}
-              value={this.state.services.wfs.boreholes.attributes.external_project_id}
+              value={
+                this.state.services.wfs.boreholes.attributes.external_project_id
+              }
             />
           </div>
           <div>
@@ -589,7 +701,7 @@ class ToolOptions extends Component {
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
-                title="Ange max antal WFS sökträffar. Ange -1 för obegränsat antal."
+                title="Ange max antal WFS sökträffar. Ange 0 för obegränsat antal."
               />
             </label>
             <input
@@ -605,7 +717,9 @@ class ToolOptions extends Component {
             />
           </div>
 
-          <div className="separator">Inställningar - gemensamt för samtliga format</div>
+          <div className="separator">
+            Inställningar - gemensamt för samtliga format
+          </div>
           <div>
             <label htmlFor="view__termsAndConditionsLink">
               Länk, villkor för nyttjande{" "}
@@ -664,7 +778,9 @@ class ToolOptions extends Component {
             />
           </div>
 
-          <div className="separator">Texter - Geotekniska utredningar, beställning</div>
+          <div className="separator">
+            Texter - Geotekniska utredningar, beställning
+          </div>
           <div>
             <label htmlFor="view__projects__order__description">
               Beställning, instruktion{" "}
@@ -764,7 +880,7 @@ class ToolOptions extends Component {
           </div>
           <div>
             <label htmlFor="view__boreholes__order__informationLink__linkText">
-              Leveransinformation länk text {" "}
+              Leveransinformation länk text{" "}
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
@@ -783,7 +899,7 @@ class ToolOptions extends Component {
           </div>
           <div>
             <label htmlFor="view__boreholes__order__informationLink__linkHref">
-              Leveransinformation länk adress {" "}
+              Leveransinformation länk adress{" "}
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
@@ -798,6 +914,67 @@ class ToolOptions extends Component {
                 this.handleInputChange(e);
               }}
               value={this.state.view.boreholes.order.informationLink.linkHref}
+            />
+          </div>
+
+          <div className="separator">
+            Texter - Geotekniska utredningar, bekräftelse
+          </div>
+          <div>
+            <label htmlFor="view__projects__confirmation__header">
+              Bekräftelse, ingress{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Visas som ingress efter beställning av geotekniska utredningar"
+              />
+            </label>
+            <textarea
+              type="text"
+              id="view__projects__confirmation__header"
+              name="view__projects__confirmation__header"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              value={this.state.view.projects.confirmation.header}
+            />
+          </div>
+          <div>
+            <label htmlFor="view__projects__confirmation__informationText">
+              Bekräftelse, instruktion{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Visas som instruktion efter beställning av geotekniska utredningar"
+              />
+            </label>
+            <textarea
+              type="text"
+              id="view__projects__confirmation__informationText"
+              name="view__projects__confirmation__informationText"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              value={this.state.view.projects.confirmation.informationText}
+            />
+          </div>
+          <div>
+            <label htmlFor="view__projects__confirmation__whereNextText">
+              Vidare, instruktion{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Visas som instruktion hur användaren kan gå vidare efter en beställning av geotekniska utredningar"
+              />
+            </label>
+            <textarea
+              type="text"
+              id="view__projects__confirmation__whereNextText"
+              name="view__projects__confirmation__whereNextText"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              value={this.state.view.projects.confirmation.whereNextText}
             />
           </div>
 

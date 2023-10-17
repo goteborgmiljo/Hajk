@@ -1,52 +1,123 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { createRoot } from "react-dom/client";
 import { createPortal } from "react-dom";
-import { withStyles } from "@material-ui/core/styles";
 import { withSnackbar } from "notistack";
-import Grid from "@material-ui/core/Grid";
-import { Typography } from "@material-ui/core";
-import ReactDOM from "react-dom";
-import Button from "@material-ui/core/Button";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import PrintList from "./PrintList";
-import TableOfContents from "./TableOfContents";
-import { ThemeProvider } from "@material-ui/styles";
-import { getNormalizedMenuState } from "../utils/stateConverter";
-import { hasSubMenu } from "../utils/helpers";
-
 import {
-  LinearProgress,
+  styled,
+  StyledEngineProvider,
+  ThemeProvider,
+  useTheme,
+} from "@mui/material/styles";
+import {
+  Button,
+  Checkbox,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
-} from "@material-ui/core";
+  FormControlLabel,
+  Grid,
+  LinearProgress,
+  Typography,
+  List,
+  ListItemButton,
+  DialogActions,
+  useMediaQuery,
+} from "@mui/material";
 
-const styles = (theme) => ({
-  gridContainer: {
-    padding: theme.spacing(4),
-    height: "100%",
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+
+import { deepMerge } from "utils/DeepMerge";
+
+import PrintList from "./PrintList";
+import TableOfContents from "./TableOfContents";
+import { getNormalizedMenuState } from "../utils/stateConverter";
+import { hasSubMenu } from "../utils/helpers";
+
+const GridGridContainer = styled(Grid)(({ theme }) => ({
+  padding: theme.spacing(3),
+  height: "100%",
+  overflowX: "auto",
+}));
+
+const GridMiddleContainer = styled(Grid)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  overflowX: "auto",
+  "&::-webkit-scrollbar": {
+    width: "0.4em",
+    opacity: "0",
   },
-  middleContainer: {
-    overflowX: "auto",
-    flexBasis: "100%",
-    marginTop: theme.spacing(2),
+  "&:hover": {
+    "&::-webkit-scrollbar": {
+      opacity: "1",
+    },
+    "&::-webkit-scrollbar-track": {
+      boxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
+      webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(0,0,0,.1)",
+    },
   },
-  headerContainer: {
-    marginBottom: theme.spacing(2),
+  flexBasis: "100%",
+}));
+
+const GridHeaderContainer = styled(Grid)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
+
+const GridSettingsContainer = styled(Grid)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
+
+const GridFooterContainer = styled(Grid)(({ theme }) => ({
+  flexBasis: "10%",
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "flex-end",
+}));
+
+const StyledListItemButton = styled(ListItemButton)(({ theme, index }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  padding: "16px 10px 16px 10px",
+  borderBottom: "1px solid lightgray",
+  borderLeft: index % 2 === 0 ? "4px solid lightGray" : "4px solid darkGray",
+}));
+
+const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
+  overflowY: "clip",
+  position: "relative",
+  "&:before": {
+    display: "block",
+    content: `""`,
+    width: "100%",
+    paddingTop: "141.15%",
+    paddingLeft: "80%",
   },
-  settingsContainer: {
-    marginBottom: theme.spacing(2),
-  },
-  footerContainer: {
-    flexBasis: "10%",
-  },
-});
+}));
+
+const StyledIframe = styled("iframe")(({ theme }) => ({
+  position: "absolute",
+  width: "calc(100% - 40px)",
+  height: "100%",
+  top: "0",
+  left: "0",
+  margin: "20px",
+}));
 
 const maxHeight = 950;
 const imageResizeRatio = 0.7;
+
+function ComponentWithRenderCallback({ callback, children }) {
+  useEffect(() => callback());
+
+  return <div>{children}</div>;
+}
 
 class PrintWindow extends React.PureComponent {
   state = {
@@ -60,6 +131,10 @@ class PrintWindow extends React.PureComponent {
     printContent: undefined,
     pdfLoading: false,
     isAnyDocumentSelected: false,
+    showAttachments: false,
+    selectedPdfIndex: null,
+    isModalOpen: false,
+    pdfLinks: this.checkPdfLinks(this.props.options.pdfLinks),
   };
 
   internalId = 0;
@@ -165,15 +240,27 @@ class PrintWindow extends React.PureComponent {
   };
 
   customRender = (element, container) => {
+    // Since the ThemeProvider seems to cache the theme in some way, we have to make sure to
+    // create a new theme-reference to make sure that the correct theme is used when rendering.
+    // If we don't create a new reference, the custom-theme will be overridden by the standard MUI-theme
+    // since the standard MUI-theme is refreshed (and thereby has the highest css-specificity) sometimes.
+    // This is quite messy, but get's the job done. See issue #999 for more info.
+    const theme = deepMerge(this.props.customTheme || this.props.theme, {});
+    // Make sure to render the components using the custom theme if it exists:
     return new Promise((resolve) => {
-      ReactDOM.render(
-        <ThemeProvider theme={this.props.customTheme || this.props.theme}>
-          {element}
-        </ThemeProvider>,
-        container,
-        (e) => {
-          resolve();
-        }
+      const rootElement = createRoot(container);
+      rootElement.render(
+        <StyledEngineProvider>
+          <ThemeProvider theme={theme}>
+            <ComponentWithRenderCallback
+              callback={() => {
+                resolve();
+              }}
+            >
+              {element}
+            </ComponentWithRenderCallback>
+          </ThemeProvider>
+        </StyledEngineProvider>
       );
     });
   };
@@ -209,16 +296,6 @@ class PrintWindow extends React.PureComponent {
     );
   };
 
-  getCurrentStyleTags = () => {
-    const styleTags = [];
-    [...document.head.children].forEach((c) => {
-      if (c.nodeName === "STYLE") {
-        styleTags.push(c.cloneNode(true));
-      }
-    });
-    return styleTags;
-  };
-
   handleNewWindowBlocked = () => {
     window.alert(
       "Please allow opening of popup windows in order to print this document."
@@ -240,13 +317,20 @@ class PrintWindow extends React.PureComponent {
       return this.handleNewWindowBlocked();
     }
 
-    this.getCurrentStyleTags().forEach((tag) => {
-      printWindow.document.head.appendChild(tag);
-    });
-
     printWindow.document.head.insertAdjacentHTML(
       "beforeend",
       ` <title>${document.title}</title>
+        <base href="${document.location.protocol}//${
+        document.location.host
+      }/" />
+        ${
+          this.props.options.dynamicImportUrls.customFont
+            ? `<link
+            rel="stylesheet"
+            type="text/css"
+            href="${this.props.options.dynamicImportUrls.customFont}"/>`
+            : ""
+        }        
         <style>
           @page {
             size: A4;
@@ -266,11 +350,22 @@ class PrintWindow extends React.PureComponent {
             h6 {
               page-break-after: avoid;
             }
-            MuiTypography-body1 {
+            .MuiTypography-body1 {
               page-break-before: avoid;
             }
             .MuiBox-root {
               page-break-inside: avoid;
+            }
+            body .blockQuoteAccordion {
+              box-shadow: none;
+              border: 4px solid #edf2f7;
+            }
+            .blockQuoteAccordion .MuiCollapse-root {
+              height: auto;
+              visibility: visible;
+            }
+            .blockQuoteAccordion .MuiAccordionSummary-expandIconWrapper {
+              display: none;
             }
           }        
         </style>`
@@ -288,7 +383,10 @@ class PrintWindow extends React.PureComponent {
     // Since we've altered the theme while printing, we must refresh to make sure
     // the original theme has the highest specificity when the printing is done.
     // Otherwise the entire application will follow the theming used in the print-contents.
-    this.props.app.refreshMUITheme();
+    // FIXME: This might not be needed after the upgrade to React 18. Let's ensure that's the
+    // case and remove if so.
+    // this.props.app.refreshMUITheme();
+
     // Then we'll update the view
     this.toggleAllDocuments(false);
     this.setState({
@@ -298,9 +396,11 @@ class PrintWindow extends React.PureComponent {
     });
   };
 
-  addPageBreaksBeforeHeadings = (printWindow) => {
-    const headings = printWindow.document.body.querySelectorAll(["h1", "h2"]);
-    //we don't want page breaks before a h2 if there is a h1 immediately before. In this case the H1 is the group parent heading.
+  addPageBreaksBeforeHeadings = (printContent) => {
+    const headings = printContent.querySelectorAll(["h1", "h2"]);
+
+    // We don't want page breaks before a H2 if there is a H1 immediately before.
+    // In this case the H1 is the group parent heading.
     let isAfterH1 = false;
     let isConsecutiveH1 = false;
 
@@ -333,22 +433,71 @@ class PrintWindow extends React.PureComponent {
     }
   };
 
+  // Creates a new window, appends all elements that should be printed, and invokes
+  // window.print(), allowing the user to save the document as a PDF (or print it straight away).
   printContents = () => {
+    // We're gonna want to make sure everything is rendered...
     Promise.all([
       this.state.tocPrintMode !== "none" && this.renderToc(),
       this.renderContent(),
     ]).then(() => {
+      // We're also gonna want to make sure all images has been loaded
       this.areAllImagesLoaded().then(() => {
-        const printWindow = this.createPrintWindow();
-        this.toc && printWindow.document.body.appendChild(this.toc);
-        printWindow.document.body.appendChild(this.content);
-        this.addPageBreaksBeforeHeadings(printWindow);
-        printWindow.document.close(); // necessary for IE >= 10
-        printWindow.focus(); // necessary for IE >= 10*/
-        printWindow.print();
-        printWindow.close();
-        // When the user closes the print-window we have to do some cleanup...
-        this.handlePrintCompleted();
+        // Then we can create an element that will hold our TOC and print-content...
+        const printContent = document.createElement("div");
+        // ...append the TOC to the element (only if applicable)...
+        this.toc && printContent.appendChild(this.toc);
+        // ...and append the actual content.
+        printContent.appendChild(this.content);
+        // Then we'll make sure to create page-breaks before headings to
+        // create a more appealing document.
+        this.addPageBreaksBeforeHeadings(printContent);
+        // Then we'll create and open a new window in the browser
+        const newWindow = this.createPrintWindow();
+
+        // We're gonna need to get all the styles into the new window...
+        // The styling is applied differently if we're in dev- or prod-mode.
+        // (Both are handled with this solution). Let's loop every emotion-style-tag
+        for (const style of document.querySelectorAll("[data-emotion]")) {
+          // Create a new style-tag
+          const s = document.createElement("style");
+          // Append an empty text-node (TODO: Why? :) )
+          s.appendChild(document.createTextNode(""));
+          // There's gonna be information in either the style-sheet or in the textContent
+          // depending on if we're in dev- or prod-mode.
+          const { textContent, sheet } = style;
+          // In development we'll have pure text styling the components...
+          if (textContent) {
+            // In that case we can just append a text-node with that text
+            s.appendChild(document.createTextNode(textContent));
+            newWindow.document.head.appendChild(s);
+            // While in prod, we'll have a stylesheet
+          } else {
+            // We have to append the new style to the document, otherwise the sheet will be null.
+            newWindow.document.head.appendChild(s);
+            for (const rule of sheet.cssRules) {
+              try {
+                s.sheet.insertRule(rule.cssText);
+              } catch (error) {
+                console.warn(`Could not insert rule: ${rule?.cssText}`);
+              }
+            }
+          }
+        }
+
+        // Add our recently-created DIV to the new window's document
+        newWindow.document.body.appendChild(printContent);
+
+        // We force print to the next upcoming render. Let it render in peace.
+        setTimeout(() => {
+          // Invoke browser's print dialog - this will block the thread
+          // until user does something with it.
+          newWindow.print();
+          // Once the print dialog has disappeared, let's close the new window
+          newWindow.close();
+          // When the user closes the print-window we have to do some cleanup...
+          this.handlePrintCompleted();
+        }, 25);
       });
     });
   };
@@ -411,11 +560,10 @@ class PrintWindow extends React.PureComponent {
 
   createMenu() {
     /* 
-    Create a normalised menu structure for the print menu, similar to that of the panel menu, but only for printable documents. 
+    Create a normalized menu structure for the print menu, similar to that of the panel menu, but only for printable documents. 
     */
     const { options } = this.props;
 
-    const modelDocuments = this.props.model.allDocuments;
     const newOptions = { ...options };
     const menuConfig = { ...newOptions }.menuConfig;
     const menuConfigClone = JSON.parse(JSON.stringify(menuConfig));
@@ -446,11 +594,9 @@ class PrintWindow extends React.PureComponent {
 
       //add the table of contents settings from the document json.
       if (document.document) {
-        let modelDoc = modelDocuments.find(
-          (modelDoc) => modelDoc.documentFileName === document.document
-        );
         document.tocChapterLevels =
-          modelDoc?.tableOfContents?.chapterLevelsToShow || 100;
+          this.props.options?.tableOfContents?.chapterLevelsToShowForPrint ??
+          100;
       }
       if (document.document) {
         document.chapters = [];
@@ -715,15 +861,13 @@ class PrintWindow extends React.PureComponent {
   };
 
   renderCreatePDFButton() {
-    const { classes } = this.props;
     return (
-      <Grid
+      <GridFooterContainer
         item
-        className={classes.footerContainer}
         container
         alignContent="center"
         alignItems="center"
-        justify="center"
+        justifyContent="center"
       >
         <Button
           color="primary"
@@ -739,7 +883,7 @@ class PrintWindow extends React.PureComponent {
             Skriv ut
           </Typography>
         </Button>
-      </Grid>
+      </GridFooterContainer>
     );
   }
 
@@ -747,11 +891,7 @@ class PrintWindow extends React.PureComponent {
     return (
       <>
         {createPortal(
-          <Dialog
-            disableBackdropClick={true}
-            disableEscapeKeyDown={true}
-            open={this.state.pdfLoading}
-          >
+          <Dialog disableEscapeKeyDown={true} open={this.state.pdfLoading}>
             <LinearProgress />
             <DialogTitle>Din PDF skapas</DialogTitle>
             <DialogContent>
@@ -769,45 +909,21 @@ class PrintWindow extends React.PureComponent {
     );
   };
 
-  render() {
-    const {
-      classes,
-      togglePrintWindow,
-      localObserver,
-      documentWindowMaximized,
-    } = this.props;
+  toggleDocumentsAttachments = () => {
+    this.setState((prevState) => ({
+      showAttachments: !prevState.showAttachments,
+    }));
+  };
+
+  renderPrintDocuments = () => {
+    const { localObserver, documentWindowMaximized } = this.props;
     const { menuInformation } = this.state;
     return (
-      <Grid
-        container
-        className={classes.gridContainer}
-        wrap="nowrap"
-        direction="column"
-      >
-        <Grid
-          className={classes.headerContainer}
-          alignItems="center"
-          item
-          container
-        >
-          <Grid item xs={4}>
-            <Button
-              color="primary"
-              style={{ paddingLeft: 0 }}
-              startIcon={<ArrowBackIcon />}
-              onClick={togglePrintWindow}
-            >
-              <Typography justify="center">Tillbaka</Typography>
-            </Button>
-          </Grid>
-          <Grid item xs={4}>
-            <Typography align="center" variant="h6">
-              Skapa PDF
-            </Typography>
-          </Grid>
-        </Grid>
-
-        <Grid container item className={classes.settingsContainer}>
+      <>
+        <Typography align="center" variant="h6">
+          Skapa PDF
+        </Typography>
+        <GridSettingsContainer container item>
           <Typography variant="h6">Inställningar</Typography>
 
           <Grid xs={12} item>
@@ -826,24 +942,218 @@ class PrintWindow extends React.PureComponent {
               labelPlacement="end"
             />
           </Grid>
-        </Grid>
+        </GridSettingsContainer>
 
         <Typography variant="h6">Valt innehåll</Typography>
 
-        <Grid className={classes.middleContainer} item container>
+        <GridMiddleContainer item container>
           <PrintList
             localObserver={localObserver}
             documentMenu={menuInformation}
             level={0}
             handleTogglePrint={this.toggleChosenForPrint}
           />
-        </Grid>
+        </GridMiddleContainer>
 
         {documentWindowMaximized && this.renderCreatePDFButton()}
         {this.renderLoadingDialog()}
-      </Grid>
+      </>
+    );
+  };
+
+  openAttachmentModal = (index) => {
+    this.setState({
+      selectedPdfIndex: index,
+      isModalOpen: true,
+    });
+  };
+
+  closeAttachmentModal = () => {
+    this.setState({
+      selectedPdfIndex: null,
+      isModalOpen: false,
+    });
+  };
+
+  checkPdfLinks(pdfLinks) {
+    const updatedLinks = pdfLinks?.filter(
+      (pdfLink) => pdfLink.name || pdfLink.link
+    );
+    return updatedLinks;
+  }
+
+  renderDialog = () => {
+    const { isModalOpen, pdfLinks, selectedPdfIndex } = this.state;
+    const closeAttachmentModal = this.closeAttachmentModal;
+
+    function ResponsiveDialog() {
+      const theme = useTheme();
+      const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+      return (
+        <Dialog
+          fullScreen={fullScreen}
+          open={isModalOpen}
+          PaperProps={{ style: { width: !fullScreen && "30%" } }}
+          BackdropProps={{
+            style: { backgroundColor: "rgba(0, 0, 0, 0.25)" },
+          }}
+          onClose={() => closeAttachmentModal()}
+        >
+          <StyledDialogContent>
+            <StyledIframe
+              title={pdfLinks[selectedPdfIndex]?.name}
+              src={pdfLinks[selectedPdfIndex]?.link}
+            />
+          </StyledDialogContent>
+          <DialogActions>
+            <Button variant="contained" onClick={() => closeAttachmentModal()}>
+              <Typography variant="body2">Stäng</Typography>
+            </Button>
+          </DialogActions>
+        </Dialog>
+      );
+    }
+    return (
+      <>
+        {createPortal(
+          <ResponsiveDialog></ResponsiveDialog>,
+          document.getElementById("root")
+        )}
+      </>
+    );
+  };
+
+  renderPrintAttachments = () => {
+    const { pdfLinks, isModalOpen } = this.state;
+
+    const renderAttachment = (pdfLink, index) => {
+      const hasName = pdfLink.name !== "";
+      const hasLink = pdfLink.link !== "";
+      const disabled = !hasLink;
+      const name = hasName ? pdfLink.name : "Namn saknas";
+      const linkText = hasLink ? "Öppna" : "Länk saknas";
+      const linkColor = hasLink ? "primary" : "text.secondary";
+      const linkIcon = hasLink ? (
+        <OpenInNewIcon sx={{ width: "15px" }} />
+      ) : null;
+
+      return (
+        <div key={index}>
+          <StyledListItemButton
+            disabled={disabled}
+            index={index}
+            onClick={() => this.openAttachmentModal(index)}
+          >
+            <Typography
+              sx={{
+                fontStyle: !hasName ? "italic" : "inherit",
+                color: !hasName ? "gray" : "inherit",
+              }}
+            >
+              {name}
+            </Typography>
+            {hasLink && (
+              <Button
+                href={pdfLink.link}
+                target="_blank"
+                sx={{ height: "28px", padding: "10px", minWidth: "auto" }}
+                color={linkColor}
+                variant="contained"
+                startIcon={linkIcon}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <Typography variant="body2" justify="center">
+                  {linkText}
+                </Typography>
+              </Button>
+            )}
+            {!hasLink && (
+              <Typography sx={{ fontStyle: "italic" }}>Länk saknas</Typography>
+            )}
+          </StyledListItemButton>
+        </div>
+      );
+    };
+
+    return (
+      <>
+        <Typography align="center" variant="h6">
+          Bilagor
+        </Typography>
+        <Typography variant="h6">Innehåll</Typography>
+        <GridMiddleContainer>
+          <List>{pdfLinks.map(renderAttachment)}</List>
+        </GridMiddleContainer>
+        {isModalOpen && this.renderDialog()}
+      </>
+    );
+  };
+
+  render() {
+    const { togglePrintWindow } = this.props;
+    const { showAttachments, pdfLinks } = this.state;
+
+    return (
+      <>
+        {!showAttachments ? (
+          <GridGridContainer container wrap="nowrap" direction="column">
+            <GridHeaderContainer
+              alignItems="center"
+              justifyContent="space-between"
+              item
+              container
+            >
+              <Grid item xs={4}>
+                <Button
+                  color="primary"
+                  style={{ paddingLeft: 0 }}
+                  startIcon={<ArrowBackIcon />}
+                  onClick={togglePrintWindow}
+                >
+                  <Typography justify="center">Tillbaka</Typography>
+                </Button>
+              </Grid>
+              <StyledGrid item xs={4}>
+                {pdfLinks?.length > 0 && (
+                  <Button
+                    color="primary"
+                    style={{ paddingLeft: 0 }}
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={() => this.toggleDocumentsAttachments()}
+                  >
+                    <Typography justify="center">Bilagor</Typography>
+                  </Button>
+                )}
+              </StyledGrid>
+            </GridHeaderContainer>
+            {this.renderPrintDocuments()}
+          </GridGridContainer>
+        ) : (
+          <GridGridContainer container wrap="nowrap" direction="column">
+            <GridHeaderContainer
+              alignItems="center"
+              justifyContent="space-between"
+              item
+              container
+            >
+              <Grid item xs={4}>
+                <Button
+                  color="primary"
+                  style={{ paddingLeft: 0 }}
+                  startIcon={<ArrowBackIcon />}
+                  onClick={() => this.toggleDocumentsAttachments()}
+                >
+                  <Typography justify="center">Skapa Pdf</Typography>
+                </Button>
+              </Grid>
+            </GridHeaderContainer>
+            {this.renderPrintAttachments()}
+          </GridGridContainer>
+        )}
+      </>
     );
   }
 }
 
-export default withStyles(styles)(withSnackbar(PrintWindow));
+export default withSnackbar(PrintWindow);

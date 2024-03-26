@@ -433,6 +433,7 @@ class LayerGroupItem extends Component {
     }
   };
 
+  // FIXME: The second parameter, `subLayer` is never used.
   setVisible = (la, subLayer) => {
     let l,
       subLayersToShow = null;
@@ -588,6 +589,9 @@ class LayerGroupItem extends Component {
 
     if (!visible && visibleSubLayers.length > 0) {
       layerVisibility = true;
+      // FIXME: `subLayer` below doesn't do anything since
+      // setVisible only makes use of its first parameter
+      // (see its implementation).
       this.setVisible(this.props.layer, subLayer);
     }
 
@@ -696,7 +700,9 @@ class LayerGroupItem extends Component {
               )}
             </CheckBoxWrapper>
             {legendIcon && this.renderLegendIcon(legendIcon)}
-            <Caption>{layer.layersInfo[subLayer].caption}</Caption>
+            <Caption sx={{ fontWeight: visible ? "bold" : "normal" }}>
+              {layer.layersInfo[subLayer].caption}
+            </Caption>
           </Grid>
           <SummaryButtonsContainer>
             <SummaryButtonWrapper>
@@ -961,7 +967,7 @@ class LayerGroupItem extends Component {
 
   render() {
     const { cqlFilterVisible, layer } = this.props;
-    const { open, toggleSettings, infoVisible } = this.state;
+    const { open, toggleSettings, infoVisible, visible } = this.state;
 
     const legendIcon = layer.get("layerInfo").legendIcon;
     return (
@@ -990,7 +996,9 @@ class LayerGroupItem extends Component {
               >
                 <Grid item>{this.getCheckBox()}</Grid>
                 {legendIcon && this.renderLegendIcon(legendIcon)}
-                <Caption>{layer.get("caption")}</Caption>
+                <Caption sx={{ fontWeight: visible ? "bold" : "normal" }}>
+                  {layer.get("caption")}
+                </Caption>
               </Grid>
               <SummaryButtonsContainer>
                 {this.renderStatus()}

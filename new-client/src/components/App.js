@@ -14,7 +14,7 @@ import AppModel from "../models/AppModel.js";
 import {
   setConfig as setCookieConfig,
   functionalOk as functionalCookieOk,
-} from "models/Cookie";
+} from "../models/Cookie";
 
 import Window from "./Window.js";
 import CookieNotice from "./CookieNotice";
@@ -341,8 +341,8 @@ class App extends React.PureComponent {
         ? activeDrawerContentFromLocalStorage
         : this.props.config.mapConfig.map.activeDrawerOnStart
       : canRenderDefaultDrawer
-      ? "plugins"
-      : null;
+        ? "plugins"
+        : null;
 
     const drawerProps = {
       props,
@@ -435,6 +435,7 @@ class App extends React.PureComponent {
     // and that still have their config there.
     lowerCaseActiveTools.push("preset");
     lowerCaseActiveTools.push("externallinks");
+    lowerCaseActiveTools.push("information");
 
     // Check which plugins defined in mapConfig don't exist in buildConfig
     const unsupportedToolsFoundInMapConfig = this.props.config.mapConfig.tools
@@ -587,9 +588,14 @@ class App extends React.PureComponent {
 
           // Act when view's zoom changes
           if (mergedParams.get("z")) {
-            // Since we're dealing with a string, we're gonna need to parse it to a float
-            const zoomInHash = parseFloat(mergedParams.get("z"));
-            if (this.appModel.map.getView().getZoom() !== zoomInHash) {
+            // Since we're dealing with a string, we have to parse it to a float.
+            // We must also round it to the nearest integer in order to avoid bouncing in View:
+            // View's getZoom() returns a float, but our hash param is always an integer.
+            // See also: #1422.
+            const zoomInHash = Math.round(parseFloat(mergedParams.get("z")));
+            if (
+              Math.round(this.appModel.map.getView().getZoom()) !== zoomInHash
+            ) {
               // …let's update our View's zoom.
               this.appModel.map.getView().animate({ zoom: zoomInHash });
             }

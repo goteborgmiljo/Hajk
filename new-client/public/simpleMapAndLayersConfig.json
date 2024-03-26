@@ -560,7 +560,7 @@
         "layersInfo": [
           {
             "id": "RS_PM10_2022_year",
-            "caption": "2022 Kvävedioxid årsmedelvärde",
+            "caption": "2022 PM10 årsmedelvärde",
             "internalLayerName": null,
             "legend": "",
             "legendIcon": "",

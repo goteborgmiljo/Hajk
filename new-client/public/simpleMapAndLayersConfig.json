@@ -279,7 +279,7 @@
             }
           ],
           "active": true,
-          "visibleAtStart": false,
+          "visibleAtStart": true,
           "visibleAtStartMobile": false,
           "backgroundSwitcherBlack": true,
           "backgroundSwitcherWhite": true,

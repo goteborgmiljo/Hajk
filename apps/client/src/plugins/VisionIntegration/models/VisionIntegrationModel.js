@@ -1044,6 +1044,8 @@ class VisionIntegrationModel {
       1: { selectedFeatures: [], wmsActive: false },
       2: { selectedFeatures: [], wmsActive: false },
       3: { selectedFeatures: [], wmsActive: false },
+      4: { selectedFeatures: [], wmsActive: false },
+      5: { selectedFeatures: [], wmsActive: false },
     };
   };
 

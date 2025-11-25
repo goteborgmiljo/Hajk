@@ -1,6 +1,6 @@
 import HomeIcon from "@mui/icons-material/Home";
 import PlaceIcon from "@mui/icons-material/Place";
-import YardIcon from "@mui/icons-material/Yard";
+import CategoryIcon from "@mui/icons-material/Category";
 
 // Enum for possible hub-connection-status
 export const HUB_CONNECTION_STATUS = Object.freeze({
@@ -42,10 +42,10 @@ export const TABS = [
   },
   {
     id: INTEGRATION_IDS.ENVIRONMENT,
-    icon: <YardIcon />,
-    label: "Markmiljö",
+    icon: <CategoryIcon />,
+    label: "Ytor",
     tooltip:
-      "Skicka områden, undersökningar, och föroreningar mellan Vision och kartan.",
+      "Skicka områden, undersökningar, föroreningar, ärenden och tillsynsobjekt mellan Vision och kartan.",
     disabled: false,
   },
 ];
@@ -54,6 +54,8 @@ export const ENVIRONMENT_IDS = Object.freeze({
   AREA: 1,
   INVESTIGATION: 2,
   POLLUTION: 3,
+  ERRAND: 4,
+  OBJECT: 5,
 });
 
 export const ENVIRONMENT_INFO = [
@@ -71,6 +73,16 @@ export const ENVIRONMENT_INFO = [
     id: ENVIRONMENT_IDS.INVESTIGATION,
     name: "Undersökningar",
     layerText: "Undersökningslager",
+  },
+  {
+    id: ENVIRONMENT_IDS.ERRAND,
+    name: "Ärenden",
+    layerText: "Ärendelager",
+  },
+  {
+    id: ENVIRONMENT_IDS.OBJECT,
+    name: "Tillsynsobjekt",
+    layerText: "Tillsynsobjektslager",
   },
 ];
 
@@ -118,9 +130,9 @@ export const MAP_INTERACTION_INFO = [
   },
   {
     id: MAP_INTERACTIONS.SELECT_ENVIRONMENT,
-    name: "Selektera markmiljö-objekt",
+    name: "Välj yta",
     helperText:
-      "Klicka de objekt som du vill välja. Om du håller in CTRL så kan du rita ett område och välja flera objekt samtidigt.",
+      "Klicka de ytor som du vill välja. Om du håller in CTRL så kan du rita ett område och välja flera ytor samtidigt.",
     useInEditView: false,
   },
   {

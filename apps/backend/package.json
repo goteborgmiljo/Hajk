@@ -1,0 +1,52 @@
+{
+  "name": "hajk-backend",
+  "version": "4.1.0",
+  "description": "Hajk Backend",
+  "homepage": ".",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hajkmap/Hajk.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "type": "module",
+  "exports": "./index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "compile": "shx rm -rf dist && shx cp -r server dist",
+    "dev": "nodemon server --config .nodemonrc.json",
+    "dev:debug": "nodemon server --config .nodemonrc.json --inspect",
+    "lint": "eslint ./server",
+    "lint:fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "activedirectory2": "^2.2.0",
+    "clf-date": "^0.2.1",
+    "compression": "^1.8.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-openapi-validator": "^5.5.0",
+    "fast-xml-parser": "^5.2.3",
+    "helmet": "^8.1.0",
+    "http-proxy-middleware": "^3.0.5",
+    "log4js": "^6.9.1",
+    "query-string": "^9.1.2",
+    "write-excel-file": "^2.3.2",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.4.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "shx": "^0.4.0"
+  },
+  "author": "Jacob Wodzyński <jacob.wodzynski@halmstad.se> (https://github.com/hajkmap)"
+}
